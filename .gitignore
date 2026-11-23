@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+coverage
+.env*
+*.tsbuildinfo
+.playwright-mcp/
+scripts/.cad-reference/
+__pycache__/
+
+/.local-private/
+/hand.glb

@@ -1,0 +1,1379 @@
+[
+  {
+    "file": "01_CAMA_MANO_Y_ESTRUCTURA_SG90_12p6x24p1.stl",
+    "triangles": 12054,
+    "shells": [
+      {
+        "triangles": 8954,
+        "bounds": [
+          [
+            82.517,
+            15.15,
+            0
+          ],
+          [
+            174.483,
+            133.75,
+            29.062
+          ]
+        ]
+      },
+      {
+        "triangles": 3100,
+        "bounds": [
+          [
+            5.517,
+            15.15,
+            0
+          ],
+          [
+            77.517,
+            164.85,
+            41.7
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/printables/hand/01_CAMA_MANO_Y_ESTRUCTURA_SG90_12p6x24p1.stl",
+    "bounds_mm": [
+      [
+        5.517,
+        15.15,
+        0
+      ],
+      [
+        174.483,
+        164.85,
+        41.7
+      ]
+    ],
+    "dimensions_mm": [
+      168.966,
+      149.7,
+      41.7
+    ]
+  },
+  {
+    "file": "02_CAMA_DEDOS_Y_5_POLEAS.stl",
+    "triangles": 34878,
+    "shells": [
+      {
+        "triangles": 2286,
+        "bounds": [
+          [
+            72.757,
+            79,
+            0
+          ],
+          [
+            87.021,
+            107.3,
+            14.669
+          ]
+        ]
+      },
+      {
+        "triangles": 2286,
+        "bounds": [
+          [
+            91.757,
+            78,
+            0
+          ],
+          [
+            105.447,
+            106.8,
+            14.676
+          ]
+        ]
+      },
+      {
+        "triangles": 2286,
+        "bounds": [
+          [
+            114.757,
+            73,
+            0
+          ],
+          [
+            129.261,
+            103.3,
+            14.695
+          ]
+        ]
+      },
+      {
+        "triangles": 2282,
+        "bounds": [
+          [
+            51.757,
+            88,
+            0
+          ],
+          [
+            64.038,
+            113.3,
+            14.62
+          ]
+        ]
+      },
+      {
+        "triangles": 2268,
+        "bounds": [
+          [
+            153.757,
+            70,
+            0
+          ],
+          [
+            171.243,
+            104.3,
+            14.727
+          ]
+        ]
+      },
+      {
+        "triangles": 2086,
+        "bounds": [
+          [
+            91.757,
+            28,
+            0
+          ],
+          [
+            110.45,
+            73.9,
+            15
+          ]
+        ]
+      },
+      {
+        "triangles": 1890,
+        "bounds": [
+          [
+            134.757,
+            28,
+            0
+          ],
+          [
+            149.394,
+            66.9,
+            15
+          ]
+        ]
+      },
+      {
+        "triangles": 1844,
+        "bounds": [
+          [
+            114.757,
+            28,
+            0
+          ],
+          [
+            130.281,
+            68.9,
+            15
+          ]
+        ]
+      },
+      {
+        "triangles": 1840,
+        "bounds": [
+          [
+            153.757,
+            28,
+            0
+          ],
+          [
+            168.933,
+            65.9,
+            15
+          ]
+        ]
+      },
+      {
+        "triangles": 1832,
+        "bounds": [
+          [
+            30.757,
+            28,
+            0
+          ],
+          [
+            46.916,
+            84.9,
+            15
+          ]
+        ]
+      },
+      {
+        "triangles": 1830,
+        "bounds": [
+          [
+            134.757,
+            71,
+            0
+          ],
+          [
+            147.772,
+            103.9,
+            15
+          ]
+        ]
+      },
+      {
+        "triangles": 1822,
+        "bounds": [
+          [
+            51.757,
+            28,
+            0
+          ],
+          [
+            68.419,
+            83.9,
+            15
+          ]
+        ]
+      },
+      {
+        "triangles": 1806,
+        "bounds": [
+          [
+            8.757,
+            28,
+            0
+          ],
+          [
+            25.911,
+            87.9,
+            15
+          ]
+        ]
+      },
+      {
+        "triangles": 1780,
+        "bounds": [
+          [
+            72.757,
+            28,
+            0
+          ],
+          [
+            86.941,
+            74.9,
+            15
+          ]
+        ]
+      },
+      {
+        "triangles": 1348,
+        "bounds": [
+          [
+            8.757,
+            92,
+            0
+          ],
+          [
+            36.757,
+            120,
+            9
+          ]
+        ]
+      },
+      {
+        "triangles": 1348,
+        "bounds": [
+          [
+            8.757,
+            124,
+            0
+          ],
+          [
+            36.757,
+            152,
+            9
+          ]
+        ]
+      },
+      {
+        "triangles": 1348,
+        "bounds": [
+          [
+            68.757,
+            112,
+            0
+          ],
+          [
+            96.757,
+            140,
+            9
+          ]
+        ]
+      },
+      {
+        "triangles": 1348,
+        "bounds": [
+          [
+            109.757,
+            108,
+            0
+          ],
+          [
+            137.757,
+            136,
+            9
+          ]
+        ]
+      },
+      {
+        "triangles": 1348,
+        "bounds": [
+          [
+            141.757,
+            109,
+            0
+          ],
+          [
+            169.757,
+            137,
+            9
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/printables/hand/02_CAMA_DEDOS_Y_5_POLEAS.stl",
+    "bounds_mm": [
+      [
+        8.757,
+        28,
+        0
+      ],
+      [
+        171.243,
+        152,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      162.486,
+      124,
+      15
+    ]
+  },
+  {
+    "file": "03_CAMA_ANTEBRAZO_CARCASA.stl",
+    "triangles": 9830,
+    "shells": [
+      {
+        "triangles": 9830,
+        "bounds": [
+          [
+            28.65,
+            9.5,
+            0
+          ],
+          [
+            151.35,
+            170.5,
+            86
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/printables/forearm/03_CAMA_ANTEBRAZO_CARCASA.stl",
+    "bounds_mm": [
+      [
+        28.65,
+        9.5,
+        0
+      ],
+      [
+        151.35,
+        170.5,
+        86
+      ]
+    ],
+    "dimensions_mm": [
+      122.7,
+      161,
+      86
+    ]
+  },
+  {
+    "file": "04_CAMA_ANTEBRAZO_TAPA.stl",
+    "triangles": 2256,
+    "shells": [
+      {
+        "triangles": 2256,
+        "bounds": [
+          [
+            28.65,
+            13.5,
+            0
+          ],
+          [
+            151.35,
+            166.5,
+            45.7
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/printables/forearm/04_CAMA_ANTEBRAZO_TAPA.stl",
+    "bounds_mm": [
+      [
+        28.65,
+        13.5,
+        0
+      ],
+      [
+        151.35,
+        166.5,
+        45.7
+      ]
+    ],
+    "dimensions_mm": [
+      122.7,
+      153,
+      45.7
+    ]
+  },
+  {
+    "file": "05_CAMA_CAJA_MODULAR.stl",
+    "triangles": 5508,
+    "shells": [
+      {
+        "triangles": 5508,
+        "bounds": [
+          [
+            28,
+            42,
+            0
+          ],
+          [
+            152,
+            138,
+            59.4
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/archive/cad-iterations/05_CAMA_CAJA_MODULAR.stl",
+    "bounds_mm": [
+      [
+        28,
+        42,
+        0
+      ],
+      [
+        152,
+        138,
+        59.4
+      ]
+    ],
+    "dimensions_mm": [
+      124,
+      96,
+      59.4
+    ]
+  },
+  {
+    "file": "06_CAMA_TAPA_CAJA.stl",
+    "triangles": 4396,
+    "shells": [
+      {
+        "triangles": 4396,
+        "bounds": [
+          [
+            28,
+            42,
+            0
+          ],
+          [
+            152,
+            138,
+            8
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/archive/cad-iterations/06_CAMA_TAPA_CAJA.stl",
+    "bounds_mm": [
+      [
+        28,
+        42,
+        0
+      ],
+      [
+        152,
+        138,
+        8
+      ]
+    ],
+    "dimensions_mm": [
+      124,
+      96,
+      8
+    ]
+  },
+  {
+    "file": "07_CAMA_BANDEJA_ELECTRONICA.stl",
+    "triangles": 17692,
+    "shells": [
+      {
+        "triangles": 17692,
+        "bounds": [
+          [
+            37.5,
+            51.5,
+            0
+          ],
+          [
+            142.5,
+            128.5,
+            2.6
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/archive/cad-iterations/07_CAMA_BANDEJA_ELECTRONICA.stl",
+    "bounds_mm": [
+      [
+        37.5,
+        51.5,
+        0
+      ],
+      [
+        142.5,
+        128.5,
+        2.6
+      ]
+    ],
+    "dimensions_mm": [
+      105,
+      77,
+      2.6
+    ]
+  },
+  {
+    "file": "robot-hand-forearm.stl",
+    "triangles": 3162,
+    "shells": [
+      {
+        "triangles": 3162,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            72,
+            149.7,
+            41.7
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-forearm.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        72,
+        149.7,
+        41.7
+      ]
+    ],
+    "dimensions_mm": [
+      72,
+      149.7,
+      41.7
+    ]
+  },
+  {
+    "file": "robot-hand-hw-servo.stl",
+    "triangles": 1100,
+    "shells": [
+      {
+        "triangles": 1100,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            32.2,
+            12,
+            29.9
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-hw-servo.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        32.2,
+        12,
+        29.9
+      ]
+    ],
+    "dimensions_mm": [
+      32.2,
+      12,
+      29.9
+    ]
+  },
+  {
+    "file": "robot-hand-index-distal.stl",
+    "triangles": 2286,
+    "shells": [
+      {
+        "triangles": 2286,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            14.263,
+            28.3,
+            14.669
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-index-distal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        14.263,
+        28.3,
+        14.669
+      ]
+    ],
+    "dimensions_mm": [
+      14.263,
+      28.3,
+      14.669
+    ]
+  },
+  {
+    "file": "robot-hand-index-middle.stl",
+    "triangles": 1840,
+    "shells": [
+      {
+        "triangles": 1840,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            15.176,
+            37.9,
+            15
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-index-middle.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        15.176,
+        37.9,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      15.176,
+      37.9,
+      15
+    ]
+  },
+  {
+    "file": "robot-hand-index-proximal.stl",
+    "triangles": 1822,
+    "shells": [
+      {
+        "triangles": 1822,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            16.661,
+            55.9,
+            15
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-index-proximal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        16.661,
+        55.9,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      16.661,
+      55.9,
+      15
+    ]
+  },
+  {
+    "file": "robot-hand-little-distal.stl",
+    "triangles": 2282,
+    "shells": [
+      {
+        "triangles": 2282,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            12.281,
+            25.3,
+            14.62
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-little-distal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        12.281,
+        25.3,
+        14.62
+      ]
+    ],
+    "dimensions_mm": [
+      12.281,
+      25.3,
+      14.62
+    ]
+  },
+  {
+    "file": "robot-hand-little-middle.stl",
+    "triangles": 1830,
+    "shells": [
+      {
+        "triangles": 1830,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            13.015,
+            32.9,
+            15
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-little-middle.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        13.015,
+        32.9,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      13.015,
+      32.9,
+      15
+    ]
+  },
+  {
+    "file": "robot-hand-little-proximal.stl",
+    "triangles": 1780,
+    "shells": [
+      {
+        "triangles": 1780,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            14.184,
+            46.9,
+            15
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-little-proximal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        14.184,
+        46.9,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      14.184,
+      46.9,
+      15
+    ]
+  },
+  {
+    "file": "robot-hand-middle-distal.stl",
+    "triangles": 2286,
+    "shells": [
+      {
+        "triangles": 2286,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            14.504,
+            30.3,
+            14.695
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-middle-distal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        14.504,
+        30.3,
+        14.695
+      ]
+    ],
+    "dimensions_mm": [
+      14.504,
+      30.3,
+      14.695
+    ]
+  },
+  {
+    "file": "robot-hand-middle-middle.stl",
+    "triangles": 1844,
+    "shells": [
+      {
+        "triangles": 1844,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            15.524,
+            40.9,
+            15
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-middle-middle.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        15.524,
+        40.9,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      15.524,
+      40.9,
+      15
+    ]
+  },
+  {
+    "file": "robot-hand-middle-proximal.stl",
+    "triangles": 1806,
+    "shells": [
+      {
+        "triangles": 1806,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            17.153,
+            59.9,
+            15
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-middle-proximal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        17.153,
+        59.9,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      17.153,
+      59.9,
+      15
+    ]
+  },
+  {
+    "file": "robot-hand-palm.stl",
+    "triangles": 8954,
+    "shells": [
+      {
+        "triangles": 8954,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            91.967,
+            118.6,
+            29.062
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-palm.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        91.967,
+        118.6,
+        29.062
+      ]
+    ],
+    "dimensions_mm": [
+      91.967,
+      118.6,
+      29.062
+    ]
+  },
+  {
+    "file": "robot-hand-ring-distal.stl",
+    "triangles": 2286,
+    "shells": [
+      {
+        "triangles": 2286,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            13.69,
+            28.8,
+            14.676
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-ring-distal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        13.69,
+        28.8,
+        14.676
+      ]
+    ],
+    "dimensions_mm": [
+      13.69,
+      28.8,
+      14.676
+    ]
+  },
+  {
+    "file": "robot-hand-ring-middle.stl",
+    "triangles": 1890,
+    "shells": [
+      {
+        "triangles": 1890,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            14.637,
+            38.9,
+            15
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-ring-middle.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        14.637,
+        38.9,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      14.637,
+      38.9,
+      15
+    ]
+  },
+  {
+    "file": "robot-hand-ring-proximal.stl",
+    "triangles": 1832,
+    "shells": [
+      {
+        "triangles": 1832,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            16.159,
+            56.9,
+            15
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-ring-proximal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        16.159,
+        56.9,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      16.159,
+      56.9,
+      15
+    ]
+  },
+  {
+    "file": "robot-hand-spool.stl",
+    "triangles": 1348,
+    "shells": [
+      {
+        "triangles": 1348,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            28,
+            28,
+            9
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-spool.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        28,
+        28,
+        9
+      ]
+    ],
+    "dimensions_mm": [
+      28,
+      28,
+      9
+    ]
+  },
+  {
+    "file": "robot-hand-thumb-distal.stl",
+    "triangles": 2268,
+    "shells": [
+      {
+        "triangles": 2268,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            17.486,
+            34.3,
+            14.727
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-thumb-distal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        17.486,
+        34.3,
+        14.727
+      ]
+    ],
+    "dimensions_mm": [
+      17.486,
+      34.3,
+      14.727
+    ]
+  },
+  {
+    "file": "robot-hand-thumb-proximal.stl",
+    "triangles": 2086,
+    "shells": [
+      {
+        "triangles": 2086,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            18.693,
+            45.9,
+            15
+          ]
+        ]
+      }
+    ],
+    "path": "scripts/.cad-reference/robot-hand-thumb-proximal.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        18.693,
+        45.9,
+        15
+      ]
+    ],
+    "dimensions_mm": [
+      18.693,
+      45.9,
+      15
+    ]
+  },
+  {
+    "file": "01_MARCO_FIJO_CAJON_USB_C_V6_PARA_IMPRIMIR.stl",
+    "triangles": 1796,
+    "shells": [
+      {
+        "triangles": 1796,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            112,
+            78,
+            40
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/printables/electronics-drawer/01_MARCO_FIJO_CAJON_USB_C_V6_PARA_IMPRIMIR.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        112,
+        78,
+        40
+      ]
+    ],
+    "dimensions_mm": [
+      112,
+      78,
+      40
+    ]
+  },
+  {
+    "file": "02_CAJON_DESLIZANTE_USB_C_V6_PARA_IMPRIMIR.stl",
+    "triangles": 512,
+    "shells": [
+      {
+        "triangles": 512,
+        "bounds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            111,
+            79.5,
+            34.8
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/printables/electronics-drawer/02_CAJON_DESLIZANTE_USB_C_V6_PARA_IMPRIMIR.stl",
+    "bounds_mm": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        111,
+        79.5,
+        34.8
+      ]
+    ],
+    "dimensions_mm": [
+      111,
+      79.5,
+      34.8
+    ]
+  },
+  {
+    "file": "03_TEST_AGUJERO_USB_C_21x12.stl",
+    "triangles": 544,
+    "shells": [
+      {
+        "triangles": 544,
+        "bounds": [
+          [
+            -20,
+            -11,
+            -1.5
+          ],
+          [
+            20,
+            11,
+            1.5
+          ]
+        ]
+      }
+    ],
+    "path": "hardware/printables/electronics-drawer/03_TEST_AGUJERO_USB_C_21x12.stl",
+    "bounds_mm": [
+      [
+        -20,
+        -11,
+        -1.5
+      ],
+      [
+        20,
+        11,
+        1.5
+      ]
+    ],
+    "dimensions_mm": [
+      40,
+      22,
+      3
+    ]
+  }
+]
