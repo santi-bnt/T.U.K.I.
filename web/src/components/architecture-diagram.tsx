@@ -123,8 +123,8 @@ export function ArchitectureDiagram() {
                   <div className="simulation-node-aside">
                     <div className="simulation-preview">
                       <Image
-                        src="/images/tuki-v2n-interior.png"
-                        alt="Interior preview of the TUKI V2N CAD assembly and diagonal servo rack"
+                        src="/images/tuki-v2y-interior.png"
+                        alt="Interior preview of the TUKI V2Y assembly and central staggered five-servo board"
                         fill
                         sizes="(max-width: 600px) 76px, (max-width: 900px) 180px, 28vw"
                       />

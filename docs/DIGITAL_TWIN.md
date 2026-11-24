@@ -1,8 +1,10 @@
 # TUKI digital twin
 
-## Active model and source of truth
+**Active model update (2026-11-23):** `web/public/models/tuki-v2y.glb` is the model loaded by Home and Studio through `TukiDigitalTwin` -> `HandScene` -> `CadHand` -> `TukiV2YHand`. The V2N GLB remains a backup only. V2Y includes the same five independently controlled V2N finger chains and five `CLOSE_*` clips; controls still use manual rotations. The Exterior/Interior/Exploded modes operate V2Y enclosure nodes. Its cabinet, USB-C passage, board and SG90 meshes are visual proposals, not evidence of physical fit or working hardware. The older V2N-specific notes below are retained as historical release documentation.
 
-The website loads only `web/public/models/tuki-v2n.glb`. Home and Studio share the same model through `TukiDigitalTwin` → `HandScene` → `CadHand` → `TukiV2NHand`. Do not add a page-specific model or recreate the hand procedurally.
+## Previous V2N model snapshot (historical)
+
+The V2N GLB is retained as a backup and is not loaded by active pages. Current model paths and controls are described in the active-model update above.
 
 TUKI V2N es un prototipo mecánico CAD con visualización 3D interactiva y control independiente simulado de cinco dedos. No se ha validado la mano física ni la tensión real de los tendones. La cámara es una dirección de desarrollo futura; no está implementada.
 

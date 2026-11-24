@@ -2,16 +2,18 @@
 
 ## Identity and current status
 
+**Current web-model update (2026-11-23):** V2Y is the active model at `web/public/models/tuki-v2y.glb`; V2N remains at `web/public/models/tuki-v2n.glb` as a backup and is not loaded by active pages. Home and Studio share `TukiV2YHand`, which uses the existing V2N hand rig and five-finger controls. The V2Y forearm, cabinet doors, USB-C passage, and nominal SG90 board are visualization geometry, not verified physical fit. See `docs/TUKI_V2Y_WEB_MIGRATION.md` and `docs/ASSET_LICENSES.md`. The older V2N-specific statements below describe the previous release snapshot.
+
 TUKI means Tendon-Driven Universal Kinetic Interface. It is a five-finger robotic-hand engineering project with an independently usable browser simulator and a developing mechanical prototype.
 
 TUKI V2N es un prototipo mecánico CAD con visualización 3D interactiva y control independiente simulado de cinco dedos. No se ha validado la mano física ni la tensión real de los tendones. La cámara es una dirección de desarrollo futura; no está implementada.
 
-The local active web model is `web/public/models/tuki-v2n.glb`. It keeps the V2N hand/rack/servo/pulley geometry and replaces the historically V2K-reused forearm/case meshes with a source-traceable parametric arm. The owner states that V2N was developed by the project team from scratch with parametric CAD and AI assistance, and has directed public-release preparation. The historic generators remain unavailable, so the complete design history is not independently reconstructible; this is a traceability limit, not a release blocker by itself. The targeted review found no concrete Shapekit mesh/resource incorporated in the active GLB or its two current previews. The site does not load historical Shapekit-derived assets. See `docs/ASSET_LICENSES.md` and `docs/V2N_MANIFIESTO_PROCEDENCIA.md` for evidence and limits.
+The preceding V2N release provenance paragraph is historical. Current asset provenance and limitations are summarized in the update above and in `docs/ASSET_LICENSES.md`.
 
 ## Implemented in the website
 
 - The Next.js app is isolated in `web/`; Vercel Root Directory is `web`.
-- Home and Studio share one 3D model through `TukiDigitalTwin` → `HandScene` → `CadHand` → `TukiV2NHand`.
+- Home and Studio share one 3D model through `TukiDigitalTwin` → `HandScene` → `CadHand` → `TukiV2YHand`.
 - Five normalized finger controls, gesture presets, number poses, Simon Says, Rock Paper Scissors, browser speech recognition where supported, and browser-local motion capture/playback are implemented as simulation features.
 - The model keeps five logical actuators (`thumb`, `index`, `middle`, `ring`, `pinky`), its five `CLOSE_*` glTF clips, and the named V2N finger joints. Runtime pose control uses the V2N rig's manual rotations; the glTF clips are preserved but are not played at the same time.
 - Exterior, Interior, and Exploded are viewer presentation modes only. They do not change the source CAD or establish a measured palm interface, hardware fit, or electronics clearance.

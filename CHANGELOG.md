@@ -1,4 +1,12 @@
-﻿# Changelog
+# Changelog
+
+## Unreleased - V2Y primary web model
+
+- Integrated the owner-supplied V2Y GLB and exterior/interior renders as the website's primary digital twin. Home and Studio share the V2Y component; Technology describes the V2Y forearm and cabinet while retaining historical Shapekit attribution.
+- Preserved the V2N GLB as a backup and retained its five-finger pose API, five embedded `CLOSE_*` clips, gestures, number poses, games, voice input, and motion recording/playback.
+- Added V2Y asset provenance and physical-validation limitations. No CAD/STL, ZIP, firmware, or V2T/V2W/V2X/V2Y manufacturing file was added to the release changes.
+- Typecheck, lint, unit tests, build, and V2Y GLB validation pass. No push or production deployment was performed.
+
 
 ## Unreleased — V2N owner provenance statement and release staging
 

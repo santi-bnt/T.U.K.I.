@@ -1,6 +1,12 @@
 # Asset licenses and provenance
 
-## Active V2N website assets — targeted release review
+## Current V2Y web assets (2026-11-23)
+
+The active model is `web/public/models/tuki-v2y.glb`; the two active preview images are `web/public/images/tuki-v2y-exterior.png` and `tuki-v2y-interior.png`. The prior V2N GLB is retained locally in `web/public/models/tuki-v2n.glb` as a backup and is not loaded by active routes. The files were supplied in `TUKI_V2Y_WEB_MODELO_PRINCIPAL_FINAL.zip`; its migration document attributes the forearm/cabinet/door/board meshes to the associated owner-supplied V2Y STL package and the articulated hand to the supplied V2N web package. The current migration ZIP itself contains the final GLB and renders but not the underlying CAD/STL sources, so this record verifies package provenance and GLB structure, not a full independent CAD-to-mesh reconstruction. The owner describes V2Y as their AI-assisted CAD work; that declaration is not third-party authorization or legal certification. The targeted structural review found no external GLB resource URIs and no concrete third-party file dependency in the supplied model/images. It does not prove absolute design independence. Historical Shapekit credits and CC BY-NC 4.0 notes below concern earlier prototypes and remain preserved; do not attribute current V2Y geometry to Shapekit without evidence.
+
+The active asset checks confirm the expected V2Y shell, doors, cabinet, board, guides, nominal servo proxies, articulated hand and five clips. Visual presence does not establish that the USB-C passage aligns with an actual board, that the five servo proxies are compatible SG90s, or that the assembly fits or functions physically.
+
+## Historical V2N website assets — prior targeted release review
 
 The active website loads `web/public/models/tuki-v2n.glb` and uses `web/public/images/tuki-v2n-exterior.png` and `tuki-v2n-interior.png`. The GLB combines the V2N hand/rack/servo/pulley meshes with the newly generated V2N/A1 Mini forearm parts; the older forearm and drawer meshes have been removed. On 2026-11-23, the project owner stated that TUKI V2N was developed by the project team from scratch using parametric CAD with AI assistance, and directed preparation for public release. This is an owner provenance declaration, not independent proof of every design decision and not authorization from a third party. The targeted review found no concrete evidence of Shapekit meshes or external third-party resources in these three active assets; that does not prove absolute mechanical independence. Missing historical CAD weakens traceability but does not itself establish infringement or prohibit publication.
 

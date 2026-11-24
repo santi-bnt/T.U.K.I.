@@ -1,8 +1,8 @@
 # TUKI
 
-TUKI (Tendon-Driven Universal Kinetic Interface) is a five-finger robotic-hand project with an interactive browser simulation and a developing mechanical prototype. The active V2N GLB preserves the hand and five-SG90 rack with its current forearm visualization. The historic V2N generator and exact V2K forearm input were not recovered; the old V2K-related enclosure meshes have been removed from the active model. Manufacturing CAD and print files for the separate forearm proposal are not part of this web release.
+TUKI (Tendon-Driven Universal Kinetic Interface) is a five-finger robotic-hand project with an interactive browser simulation and a developing mechanical prototype. The active web twin is V2Y: it combines the articulated V2N hand with the V2Y forearm enclosure, access doors, side USB-C passage, and a proposed five-SG90 board. V2N remains preserved as a backup GLB. This browser visualization does not validate physical fit, servo mounting, tendon routing, or electronics clearances.
 
-TUKI V2N es un prototipo mecánico CAD con visualización 3D interactiva y control independiente simulado de cinco dedos. No se ha validado la mano física ni la tensión real de los tendones. La cámara es una dirección de desarrollo futura; no está implementada.
+TUKI V2Y es un prototipo mecánico CAD con visualización 3D interactiva y control independiente simulado de cinco dedos. No se ha validado la mano física ni la tensión real de los tendones. La cámara es una dirección de desarrollo futura; no está implementada.
 
 ## Repository areas
 
@@ -32,11 +32,11 @@ The project owner states that V2N was developed by the project team from scratch
 
 ## Website functionality
 
-Home and Studio use the same `web/public/models/tuki-v2n.glb` through the shared digital-twin component. Studio includes five normalized finger controls, gesture presets, number poses, Simon Says, Rock Paper Scissors, browser voice commands where supported, and local motion recording, playback, import, and export. Finger motion is simulated; no physical device is connected.
+Home and Studio use the same `web/public/models/tuki-v2y.glb` through the shared `TukiDigitalTwin` component. Studio includes five normalized finger controls, gesture presets, number poses, Simon Says, Rock Paper Scissors, browser voice commands where supported, and local motion recording, playback, import, and export. Finger motion is simulated; no physical device is connected. The five `CLOSE_*` clips remain in the GLB; runtime controls use the manual pose rig.
 
 ## Hardware status
 
-V2N depicts a five-finger hand and diagonal rack for five SG90 servos with a preliminary forearm, wrist collar, electronics base, and service cover. The palm pattern and USB-C cut-out are pending measurement; no fit is claimed. The physical assembly, printing, servo mounting, tendon tension, and electronics clearances have not been validated. See the [hardware notes](hardware/README.md), [printing checklist](hardware/PRINTING_CHECKLIST.md), and [CAD assembly notes](docs/CAD_ASSEMBLY.md). Manufacturing CAD and print outputs are kept outside the web-release staging set.
+V2Y depicts the V2N hand with an enclosure, access doors, a side USB-C cable passage, and nominal servo/electronics geometry. These are visualization features; fit, printing, servo mounting, tendon tension, and electronics clearances have not been validated. See the [hardware notes](hardware/README.md), [printing checklist](hardware/PRINTING_CHECKLIST.md), and [CAD assembly notes](docs/CAD_ASSEMBLY.md). Manufacturing CAD and print outputs are kept outside the web-release staging set.
 
 ## Verification
 
