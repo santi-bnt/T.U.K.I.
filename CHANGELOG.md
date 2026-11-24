@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — V2Y articulated enclosure doors
+
+- Updated the shared V2Y digital-twin component so the forearm and electronics-cabinet doors stay visible and rotate around hinge pivots in Interior and Exploded modes; Exterior keeps them closed.
+- Preserved the active V2Y GLB, the V2N articulated-hand rig, its five independent finger controls, and existing games and voice controls. Added reduced-motion handling for the door transition.
+- Door movement is a browser visualization based on hinge coordinates supplied with the patch. Browser appearance does not certify physical clearance; the servo and support meshes remain simplified visual references.
+- TypeScript, ESLint, 11 unit tests, production build, and the V2Y model checker pass. A 0.25° sweep of the actual GLB plus point-in-solid mesh sampling found mating-surface contact at the collar/cover seams but no sampled volumetric penetration greater than 0.01 mm; no door/servo, door/board, or door/door intersection was found. This does not certify print tolerances or physical clearance. No GLB, CAD, or STL was changed; no push or production deployment was performed.
+
 ## Unreleased - V2Y primary web model
 
 - Integrated the owner-supplied V2Y GLB and exterior/interior renders as the website's primary digital twin. Home and Studio share the V2Y component; Technology describes the V2Y forearm and cabinet while retaining historical Shapekit attribution.
@@ -102,3 +109,9 @@ TUKI V2N es un prototipo mecánico CAD con visualización 3D interactiva y contr
 - Added a visible Shapekit credit and direct links to the original hand model and CC BY-NC 4.0 license on Technology.
 - Recorded the project owner's provenance statement for the TUKI forearm enclosure and horizontal drawer, distinct from Shapekit-derived hand and SG90 mounting adaptations.
 - Assessed the non-monetized CV-linked portfolio against the license's NonCommercial definition. The professional-advantage interpretation remains uncertain; public release is held pending written permission or legal clearance.
+# Visual presentation update (2026-11-24)
+
+- Added a V2Y viewer GLB variant with more detailed nominal SG90 and pulley visuals. The V2Y enclosure, hand geometry, finger rig, and five clips remain intact; no printable CAD/STL was changed.
+- Added a three-quarter camera transition for the Studio Interior and Exploded modes and tuned their lighting for better visibility. The user can orbit normally after the transition.
+- Kept `tuki-v2y.glb` as a backup. The active viewer now loads `tuki-v2y-visual.glb`.
+- These servo models remain visual proxies; physical servo fit and electronics layout are not validated.

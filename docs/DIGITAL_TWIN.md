@@ -1,6 +1,18 @@
 # TUKI digital twin
 
-**Active model update (2026-11-23):** `web/public/models/tuki-v2y.glb` is the model loaded by Home and Studio through `TukiDigitalTwin` -> `HandScene` -> `CadHand` -> `TukiV2YHand`. The V2N GLB remains a backup only. V2Y includes the same five independently controlled V2N finger chains and five `CLOSE_*` clips; controls still use manual rotations. The Exterior/Interior/Exploded modes operate V2Y enclosure nodes. Its cabinet, USB-C passage, board and SG90 meshes are visual proposals, not evidence of physical fit or working hardware. The older V2N-specific notes below are retained as historical release documentation.
+**Active model update (2026-11-24):** `web/public/models/tuki-v2y-visual.glb` is the model loaded by Home and Studio through `TukiDigitalTwin` -> `HandScene` -> `CadHand` -> `TukiV2YHand`. The earlier `tuki-v2y.glb` and V2N GLB remain as inactive backups. V2Y includes the same five independently controlled V2N finger chains and five `CLOSE_*` clips; controls still use manual rotations. The Exterior/Interior/Exploded modes operate V2Y enclosure nodes. Its cabinet, USB-C passage, board and SG90 meshes are visual proposals, not evidence of physical fit or working hardware. The older V2N-specific notes below are retained as historical release documentation.
+
+**V2Y visual presentation update (2026-11-24):** The active viewer now loads `web/public/models/tuki-v2y-visual.glb`. It preserves the V2Y shell, doors, wrist, board, guides, finger meshes, rig and five animation clips; the nominal SG90 and pulley presentation gains visual faceplates, labels, fasteners and hubs. This is a presentation-only model variant and does not change printable geometry or establish real SG90 fit. In Studio, Interior and Exploded trigger a brief three-quarter camera move; OrbitControls remain available after the transition. The previous `tuki-v2y.glb` remains in `web/public/models/` as a local project backup and is no longer the active model.
+
+## V2Y hinged-door mesh clearance review (2026-11-24)
+
+The browser pivots use the supplied V2Y CAD hinge axes: the forearm door is at X=-48.5 mm, Z=15 mm; the electronics door is at X=-62 mm, Z=27 mm. Both axes run along CAD Y. These values match the `UPPER_HINGE_*` and `HINGE_*` definitions and the Y-directed hinge barrels in the supplied parametric source; no axis adjustment was justified.
+
+The actual V2Y GLB meshes were swept in Interior from 0° to -108° and in Exploded from 0° to -95° at 0.25° increments. Triangle-surface intersection checks flagged contact along mating seams: the forearm door/collar seam at Y=-28 mm, the forearm door/transition-cover seam at Y=-145 mm, and the electronics-door/cabinet lower edge at Y=-244 mm (Z≈20 mm) when closed. The upper seam contact appears within 0° to -31.75° against the collar and 0° to -20.75° against the transition cover in Interior. In Exploded, the offset transition cover produces seam-contact flags over sampled poses from -8.75° to -95°.
+
+To distinguish surface contact from penetration, the sweep also tested mesh vertices and triangle-centroid samples with a three-direction point-in-solid check. No sample was found more than 0.01 mm inside the opposing mesh; maximum sampled volumetric penetration was 0.000 mm. The 34-mesh sweep found no surface intersections between either door and the servo proxies, servo board, tendon guides, or the other door. The upper and lower door Y extents retain a 6 mm gap, which is unchanged by rotation about Y.
+
+These are sampled checks of the rendered GLB, not an exact CAD B-rep collision proof, tolerance analysis, or physical clearance test. The zero-gap seam contacts remain visible in the mesh and may need manufacturing clearance in printed parts. No GLB, CAD, STL, servo layout, or USB-C geometry was changed for this review.
 
 ## Previous V2N model snapshot (historical)
 
