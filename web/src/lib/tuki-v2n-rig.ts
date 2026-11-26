@@ -1,8 +1,9 @@
 /**
  * TUKI V2N -- adapter for Three.js / React Three Fiber.
- * Works with public/models/tuki-v2n.glb after loading it with useGLTF.
- * Targets the joint names in the active TUKI V2N CAD model.
+ * Targets the named V2N finger chain preserved in the active V2Y PRO GLB.
  * Each finger has individually articulated segments.
+ * The maximum local rotations match the supplied CLOSE_* clip endpoints;
+ * keep them aligned with those clips and the mesh-clearance checks.
  *
  * Usage in your existing component:
  * const {scene} = useGLTF('/models/tuki-v2n.glb');

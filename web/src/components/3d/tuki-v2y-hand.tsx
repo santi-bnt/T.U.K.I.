@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { Group, MathUtils, type Object3D } from 'three';
+import { Group, MathUtils, Mesh, MeshPhysicalMaterial, type Object3D } from 'three';
+import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 import type { ThreeElements } from '@react-three/fiber';
 import { resetTukiPose, setTukiPose, verifyTukiV2NRig, type TukiFinger } from '@/lib/tuki-v2n-rig';
 import type { EnclosureMode } from './tuki-digital-twin';
@@ -41,6 +42,50 @@ const ASSEMBLY_PARTS = [
   'SERVOS_NOMINALES_V2Y',
 ] as const;
 
+function prepareWebHandMaterials(root: Object3D): void {
+  const printedPolymer = new MeshPhysicalMaterial({
+    color: '#b7c2cc',
+    roughness: 0.34,
+    metalness: 0.12,
+    clearcoat: 0.22,
+    clearcoatRoughness: 0.3,
+    envMapIntensity: 0.9,
+  });
+  const palmPolymer = new MeshPhysicalMaterial({
+    color: '#596875',
+    roughness: 0.4,
+    metalness: 0.14,
+    clearcoat: 0.14,
+    clearcoatRoughness: 0.38,
+    envMapIntensity: 0.8,
+  });
+
+  root.traverse((object) => {
+    if (!(object instanceof Mesh)) return;
+    object.castShadow = true;
+    object.receiveShadow = true;
+
+    if (object.name === 'PALMA' || object.name.startsWith('FINGER_')) {
+      // El GLB de CAD omite normales en estas mallas; el ángulo de pliegue
+      // suaviza las curvas y conserva aristas mecánicas duras.
+      object.geometry = toCreasedNormals(
+        object.geometry.clone(),
+        MathUtils.degToRad(30),
+      );
+      object.material = object.name === 'PALMA' ? palmPolymer : printedPolymer;
+      return;
+    }
+
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    const presentationMaterials = materials.map((material) => {
+      const presentationMaterial = material.clone();
+      presentationMaterial.envMapIntensity = Math.max(presentationMaterial.envMapIntensity, 0.8);
+      return presentationMaterial;
+    });
+    object.material = Array.isArray(object.material) ? presentationMaterials : presentationMaterials[0];
+  });
+}
+
 /** Añade un pivote sin alterar la pose cerrada ni la geometría de la puerta. */
 function addHinge(root: Object3D, name: string, x: number, z: number): Group {
   const door = root.getObjectByName(name);
@@ -64,14 +109,29 @@ function addHinge(root: Object3D, name: string, x: number, z: number): Group {
  * calibración física de servos.
  */
 export function TukiV2YHand({ closure = {}, mode = 'exterior', ...groupProps }: Props) {
-  const { scene } = useGLTF('/models/tuki-v2y-visual.glb');
+  const { scene } = useGLTF('/models/tuki-v2y-pro.glb');
   const reducedMotion = useRef(false);
   const model = useMemo(() => {
     const clone = scene.clone(true);
+    prepareWebHandMaterials(clone);
     const missing = verifyTukiV2NRig(clone);
     if (missing.length) throw new Error(`TUKI V2Y: missing joint nodes: ${missing.join(', ')}`);
     return clone;
   }, [scene]);
+
+  useEffect(() => () => {
+    const geometries = new Set<object>();
+    const materials = new Set<{ dispose: () => void }>();
+    model.traverse((object) => {
+      if (!(object instanceof Mesh)) return;
+      if (object.name === 'PALMA' || object.name.startsWith('FINGER_')) geometries.add(object.geometry);
+      for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+        materials.add(material);
+      }
+    });
+    geometries.forEach((geometry) => (geometry as { dispose: () => void }).dispose());
+    materials.forEach((material) => material.dispose());
+  }, [model]);
 
   const { parts, hinges } = useMemo(() => {
     const forearm = addHinge(model, CAD_HINGES.forearm.name, CAD_HINGES.forearm.x, CAD_HINGES.forearm.z);
@@ -142,4 +202,4 @@ export function TukiV2YHand({ closure = {}, mode = 'exterior', ...groupProps }: 
   return <group {...groupProps}><primitive object={model} /></group>;
 }
 
-useGLTF.preload('/models/tuki-v2y-visual.glb');
+useGLTF.preload('/models/tuki-v2y-pro.glb');

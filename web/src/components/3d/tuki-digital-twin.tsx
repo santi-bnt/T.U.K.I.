@@ -10,10 +10,11 @@ const Scene = dynamic(() => import("@/components/hand-scene"), {
   loading: () => <div className="scene-loading">Loading TUKI CAD</div>,
 });
 
-export function TukiDigitalTwin({ variant, pose = OPEN_HAND, cameraReset = 0 }: {
+export function TukiDigitalTwin({ variant, pose = OPEN_HAND, cameraReset = 0, focusHand = false }: {
   variant: "hero" | "studio" | "technical";
   pose?: HandPose;
   cameraReset?: number;
+  focusHand?: boolean;
 }) {
   const [mode, setMode] = useState<EnclosureMode>("exterior");
   const [orbit, setOrbit] = useState(variant !== "hero");
@@ -31,7 +32,7 @@ export function TukiDigitalTwin({ variant, pose = OPEN_HAND, cameraReset = 0 }: 
 
   return (
     <div ref={viewport} className={`tuki-twin tuki-twin-${variant}`}>
-      {visible && <Scene key={cameraReset} pose={pose} mode={mode} orbit={orbit} hero={variant === "hero"} />}
+      {visible && <Scene key={cameraReset} pose={pose} mode={mode} orbit={orbit} hero={variant === "hero"} focusHand={focusHand} />}
       <div className="twin-toolbar">
         {variant === "hero" ? (
           <button className="button button-muted" aria-pressed={orbit} onClick={() => setOrbit(!orbit)}>

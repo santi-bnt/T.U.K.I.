@@ -12,17 +12,17 @@ const STEPS = [
     id: "camera",
     index: "01",
     title: "Camera input",
-    short: "Intended interaction direction",
-    status: "INTENDED DIRECTION",
-    detail: "Camera-based interaction is the chosen direction for TUKI. Camera capture and camera permissions are not implemented in the current website.",
+    short: "Opt-in camera access in Studio",
+    status: "IMPLEMENTED · SIMULATION INPUT",
+    detail: "Studio requests camera permission only after Start. The preview and hand landmarks stay in the browser; the camera does not connect to hardware.",
   },
   {
     id: "vision",
     index: "02",
     title: "Vision interpretation",
-    short: "Gesture recognition and pose mapping",
-    status: "PLANNED",
-    detail: "Recognizing gestures in camera imagery and translating them into normalized hand poses remains future work.",
+    short: "Landmark-based finger flexion mapping",
+    status: "IMPLEMENTED · FLEXION ESTIMATE",
+    detail: "MediaPipe detects 21 points and estimates five finger-flexion values for the existing simulation. Semantic gesture recognition and physical calibration remain future work.",
   },
   {
     id: "hand",
@@ -40,7 +40,7 @@ const SIMULATION = {
   title: "Web digital twin",
   short: "Interactive browser simulation",
   status: "IMPLEMENTED · SIMULATION",
-  detail: "The articulated twin responds to direct browser controls today. Camera-driven gesture interpretation is not connected yet.",
+  detail: "The articulated twin responds to manual controls and optional camera-based finger-flexion estimates through the same normalized HandPose simulation.",
 } as const;
 
 type StepId = (typeof STEPS)[number]["id"];
@@ -94,7 +94,7 @@ export function ArchitectureDiagram() {
     <div ref={rootRef} className="architecture-visual architecture-visual-technology">
       <div className="architecture-lane-heading">
         <span>CAMERA-BASED INTERACTION</span>
-        <span>INTENDED PATH / STATUS BY STAGE</span>
+        <span>SIMULATION INPUT / STATUS BY STAGE</span>
       </div>
       <div className="architecture-timeline" role="group" aria-label="Camera-based interaction stages">
         {TIMELINE.map((item, index) => {
@@ -117,7 +117,7 @@ export function ArchitectureDiagram() {
                     <span className="simulation-node-content">
                       <span className="architecture-node-status is-implemented"><i />{SIMULATION.status}</span>
                       <strong>{SIMULATION.title}</strong>
-                      <span className="simulation-node-description">The articulated twin responds to direct browser controls today. Camera-driven gesture interpretation remains planned.</span>
+                      <span className="simulation-node-description">The articulated twin responds to manual controls and optional camera-based flexion estimates.</span>
                     </span>
                   </button>
                   <div className="simulation-node-aside">

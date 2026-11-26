@@ -3,9 +3,9 @@ import { ArrowUpRight } from "lucide-react";
 import { ArchitectureDiagram } from "@/components/architecture-diagram";
 
 const components = [
-  ["01", "Camera input", "INTENDED INTERACTION", "Planned", "Camera-based interaction is the chosen direction. Camera capture is not yet implemented in the website."],
-  ["02", "Vision interpretation", "GESTURE MAPPING", "Planned", "Interpreting visual gestures and mapping them to normalized hand poses remains future work."],
-  ["03", "Web digital twin", "CURRENT WEB SYSTEM", "Implemented", "The browser simulation supports direct finger controls, gesture presets, games, voice commands where available, and motion sequences."],
+  ["01", "Camera input", "OPT-IN STUDIO INPUT", "Implemented", "Studio requests camera permission only after the user starts tracking; preview and inference run in the browser."],
+  ["02", "Vision interpretation", "FINGER-FLEXION ESTIMATE", "Implemented", "MediaPipe's 21 landmarks estimate five independent normalized flexion values. Semantic gesture recognition and human/robot calibration remain future work."],
+  ["03", "Web digital twin", "CURRENT WEB SYSTEM", "Implemented", "The browser simulation uses the same HandPose for manual controls, presets, games, motion sequences, and optional camera input."],
   ["04", "Tendon-driven hand", "PHYSICAL INTEGRATION", "Planned", "The five-finger right hand and its actuation have not yet been fully assembled or physically validated."],
   ["05", "SG90 servomotors", "ACTUATION", "Available", "SG90 servomotors are available for the project. Final mounting and movement calibration remain open."],
   ["06", "NXP controller", "CONTROL CONCEPT", "Planned", "An NXP controller is proposed for future hand integration. Firmware and physical control are outside this web phase."],
@@ -24,7 +24,7 @@ export default function Technology() {
     <section className="tech-flow">
       <div className="tech-flow-copy">
         <div className="section-index">01 — ARCHITECTURE MAP</div>
-        <p className="eyebrow">CAMERA-BASED INTERACTION / STATUS BY STAGE</p>
+        <p className="eyebrow">CAMERA-DRIVEN SIMULATION / STATUS BY STAGE</p>
         <h2>From camera<br /><em>to motion.</em></h2>
         <p className="tech-flow-note"><span>INSPECT THE FLOW</span><span>Select a stage to see its role and implementation status.</span></p>
       </div>
@@ -53,7 +53,7 @@ export default function Technology() {
     <section className="boundaries" id="credits" aria-labelledby="credits-title">
       <p className="eyebrow">DESIGN CREDIT</p>
       <h2 id="credits-title">Built on shared<br /><em>ideas and work.</em></h2>
-      <p className="body-large">The owner supplied the V2Y web model and describes its CAD as developed for TUKI with AI assistance. The active twin combines the articulated V2N hand with the V2Y forearm enclosure, access doors, side USB-C cable passage and nominal five-servo mounting board. The current migration package contains the final GLB and renders, but not the complete CAD-to-mesh source chain; see the provenance notes for the evidence and its limits. No concrete external mesh dependency was identified in the supplied web assets, but this is not proof of absolute design independence or third-party authorization. Finger movement is simulated; physical fit, servo mounting, cable routing and tendon tension have not been validated.</p>
+      <p className="body-large">The owner supplied the V2Y web model and describes its CAD as developed for TUKI with AI assistance. The active twin combines the articulated V2N hand with the V2Y forearm enclosure, access doors, side USB-C cable passage, nominal five-servo mounting arrangement and a conceptual electronics-board placeholder. The PRO details are visual only; the board is not the physical NXP controller and does not specify mounting holes or connections. The package does not provide the complete CAD-to-mesh source chain; see the provenance notes for the evidence and its limits. No concrete external mesh dependency was identified in the supplied web assets, but this is not proof of absolute design independence or third-party authorization. Finger movement is simulated; physical fit, servo mounting, cable routing and tendon tension have not been validated.</p>
       <p className="body-large">Earlier TUKI prototypes explored and adapted Shapekit&apos;s <a href="https://shapekit.cc/robot-hand" target="_blank" rel="noreferrer">Tendon-Driven Robot Hand</a>, offered under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noreferrer">CC BY-NC 4.0</a>. That license permits adaptations under its conditions; it does not automatically classify every later TUKI component. No exact matching facets were detected between the earlier V2N STL meshes and the inspected Shapekit references; this does not certify mechanical independence. Shapekit is not affiliated with or endorsing TUKI.</p>
     </section>
   </div>;
