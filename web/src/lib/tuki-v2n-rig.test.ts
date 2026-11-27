@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { Quaternion, type Object3D } from "three";
+import { Quaternion, type AnimationClip, type Object3D } from "three";
 import { setTukiFingerClosure, setTukiPose, type TukiFinger } from "@/lib/tuki-v2n-rig";
 
 const FINGERS: TukiFinger[] = ["PULGAR", "INDICE", "MEDIO", "ANULAR", "MENIQUE"];
@@ -16,6 +16,7 @@ const JOINT_COUNT: Record<TukiFinger, number> = {
 const TEST_CLOSURES = [0, 0.25, 0.5, 0.75, 1];
 let sourceScene: Object3D;
 let clips = new Map<string, Map<string, Quaternion>>();
+let sourceAnimations: AnimationClip[] = [];
 
 function jointName(finger: TukiFinger, joint: number): string {
   return `FINGER_${finger}_${String(joint).padStart(2, "0")}`;
@@ -37,9 +38,10 @@ function rotationDifference(first: Quaternion, second: Quaternion): number {
 
 beforeAll(async () => {
   vi.stubGlobal("ProgressEvent", class ProgressEvent {});
-  const bytes = readFileSync(resolve(process.cwd(), "public/models/tuki-v2y-pro.glb"));
+  const bytes = readFileSync(resolve(process.cwd(), "public/models/tuki-v2n-v4-r1.glb"));
   const { scene, animations } = await new GLTFLoader().parseAsync(new Uint8Array(bytes).buffer, "");
   sourceScene = scene;
+  sourceAnimations = animations;
 
   clips = new Map(animations.map((clip) => [
     clip.name,
@@ -61,7 +63,7 @@ beforeAll(async () => {
 
 afterAll(() => vi.unstubAllGlobals());
 
-describe("TUKI V2Y web finger rig", () => {
+describe("TUKI V2N + V4 R1 finger rig", () => {
   it("moves every independent finger through all five normalized closure values", () => {
     for (const finger of FINGERS) {
       const model = sourceScene.clone(true);
@@ -74,7 +76,7 @@ describe("TUKI V2Y web finger rig", () => {
       const fullClosure = clips.get(`CLOSE_${finger}`)!;
 
       for (const closure of TEST_CLOSURES) {
-        setTukiFingerClosure(model, finger, closure);
+        setTukiFingerClosure(model, finger, closure, sourceAnimations);
         for (let index = 0; index < JOINT_COUNT[finger]; index += 1) {
           const joint = getJoint(model, finger, index + 1);
           const base = new Quaternion().fromArray(joint.userData.__tukiV2NBaseQuaternion);
@@ -92,7 +94,7 @@ describe("TUKI V2Y web finger rig", () => {
 
     for (const closure of TEST_CLOSURES) {
       const model = sourceScene.clone(true);
-      setTukiPose(model, Object.fromEntries(FINGERS.map((item) => [item, closure])) as Record<TukiFinger, number>);
+      setTukiPose(model, Object.fromEntries(FINGERS.map((item) => [item, closure])) as Record<TukiFinger, number>, sourceAnimations);
       for (const finger of FINGERS) {
         const fullTarget = clips.get(`CLOSE_${finger}`)!;
         for (let jointIndex = 1; jointIndex <= JOINT_COUNT[finger]; jointIndex += 1) {
@@ -109,7 +111,7 @@ describe("TUKI V2Y web finger rig", () => {
 
   it("matches the supplied CLOSE clips at full closure", () => {
     const model = sourceScene.clone(true);
-    setTukiPose(model, Object.fromEntries(FINGERS.map((finger) => [finger, 1])) as Record<TukiFinger, number>);
+    setTukiPose(model, Object.fromEntries(FINGERS.map((finger) => [finger, 1])) as Record<TukiFinger, number>, sourceAnimations);
 
     for (const finger of FINGERS) {
       const clip = clips.get(`CLOSE_${finger}`);

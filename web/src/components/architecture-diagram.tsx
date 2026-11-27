@@ -123,12 +123,12 @@ export function ArchitectureDiagram() {
                   <div className="simulation-node-aside">
                     <div className="simulation-preview">
                       <Image
-                        src="/images/tuki-v2y-interior.png"
-                        alt="Interior preview of the TUKI V2Y assembly and central staggered five-servo board"
+                        src="/images/tuki-v4-r1-interior.png"
+                        alt="V2N hand and V4 R1 visual assembly with both doors open and five nominal SG90 references"
                         fill
                         sizes="(max-width: 600px) 76px, (max-width: 900px) 180px, 28vw"
                       />
-                      <span>CAD DIGITAL TWIN</span>
+                      <span>V2N + V4 R1 VISUAL TWIN</span>
                     </div>
                     <Link className="simulation-launch" href="/studio">Launch Studio <ArrowUpRight size={14} /></Link>
                   </div>

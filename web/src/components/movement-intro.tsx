@@ -42,15 +42,15 @@ export function MovementIntro() {
       </div>
       <figure className="manifesto-visual" data-story-visual>
         <Image
-          src="/images/tuki-v2y-exterior.png"
-          alt="TUKI V2Y CAD prototype with five open fingers and the forearm enclosure"
+          src="/images/tuki-v4-r1-exterior.png"
+          alt="V2N robotic hand with the V4 R1 forearm assembly in the TUKI browser twin"
           fill
           sizes="(max-width: 600px) 100vw, (max-width: 900px) 48vw, (max-width: 1200px) 72vw, 90vw"
           className="manifesto-render"
           priority
         />
         <div className="manifesto-image-wash" aria-hidden="true" />
-        <figcaption><span>TUKI V2Y CAD · DIGITAL TWIN</span><span>SIMULATION RENDER</span></figcaption>
+        <figcaption><span>TUKI V2N + V4 R1 · DIGITAL TWIN</span><span>VISUAL ASSEMBLY</span></figcaption>
         <div className="manifesto-visual-note"><span>05</span><span>ARTICULATED DIGITS</span></div>
       </figure>
     </section>

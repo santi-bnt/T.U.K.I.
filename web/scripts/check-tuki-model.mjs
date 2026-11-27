@@ -1,3 +1,2 @@
-// TUKI's main web model is V2Y. This alias keeps the existing release command
-// `node scripts/check-tuki-model.mjs` pointed at the ACTIVE GLB.
-import './check-tuki-v2y-model.mjs';
+// Keep the established release-check command pointed at the active V2N + V4 R1 model.
+import './check-tuki-v2n-v4-r1.mjs';

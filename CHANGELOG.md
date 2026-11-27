@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased - TUKI V2N + V4 R1 web assembly
+
+- Replaced the procedural active model with the supplied V2N + V4 R1 GLB and five nominal SG90 references. Home and Studio share it; Technology uses captures from the same viewer.
+- Exterior, Interior, and Exploded use the GLB's named nodes and hinge pivots. Exploded offsets are presentation-only.
+- Preserved HandPose, five independent joints, Camera Tracking, filters, controller arbitration, MOCK transport, games, and voice. Finger closure follows the supplied CLOSE_* clip endpoints.
+- Added the GLB checker and browser route verification. The source GLB is unchanged; missing normals are computed only on cloned render geometry.
+- No physical fit or collision validation is claimed. CAD, STL, STEP, firmware, and print files are not part of this release.
+
 ## Unreleased — V2Y articulated enclosure doors
 
 - Updated the shared V2Y digital-twin component so the forearm and electronics-cabinet doors stay visible and rotate around hinge pivots in Interior and Exploded modes; Exterior keeps them closed.

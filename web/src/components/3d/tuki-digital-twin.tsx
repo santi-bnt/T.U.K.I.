@@ -7,7 +7,7 @@ import { OPEN_HAND, type HandPose } from "@/lib/motion";
 export type EnclosureMode = "exterior" | "interior" | "exploded";
 const Scene = dynamic(() => import("@/components/hand-scene"), {
   ssr: false,
-  loading: () => <div className="scene-loading">Loading TUKI CAD</div>,
+  loading: () => <div className="scene-loading">Loading TUKI web visual</div>,
 });
 
 export function TukiDigitalTwin({ variant, pose = OPEN_HAND, cameraReset = 0, focusHand = false }: {

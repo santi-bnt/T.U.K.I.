@@ -1,9 +1,9 @@
 /**
  * TUKI V2N -- adapter for Three.js / React Three Fiber.
- * Targets the named V2N finger chain preserved in the active V2Y PRO GLB.
+ * Targets the named V2N-compatible finger chain in the active web-visual GLB.
  * Each finger has individually articulated segments.
- * The maximum local rotations match the supplied CLOSE_* clip endpoints;
- * keep them aligned with those clips and the mesh-clearance checks.
+ * The visual-model closure angles match its supplied CLOSE_* clip endpoints.
+ * They are not SG90 angles or mechanically validated limits.
  *
  * Usage in your existing component:
  * const {scene} = useGLTF('/models/tuki-v2n.glb');
@@ -12,18 +12,18 @@
  * Do not play a glTF animation clip and update the same joints with this
  * controller simultaneously. Pick one motion system at a time.
  */
-import { Object3D, Quaternion, Vector3 } from 'three';
+import { AnimationClip, Object3D, Quaternion, Vector3 } from 'three';
 
 export type TukiFinger = 'PULGAR' | 'INDICE' | 'MEDIO' | 'ANULAR' | 'MENIQUE';
 export type TukiPose = Record<TukiFinger, number>;
 
 const AXIS_X = new Vector3(1, 0, 0);
 const MAX_ANGLES: Record<TukiFinger, number[]> = {
-  PULGAR: [70, 65],
-  INDICE: [70, 60, 50],
-  MEDIO: [72, 60, 50],
-  ANULAR: [70, 60, 50],
-  MENIQUE: [70, 58, 48],
+  PULGAR: [82, 88],
+  INDICE: [82, 86, 78],
+  MEDIO: [84, 86, 78],
+  ANULAR: [82, 86, 78],
+  MENIQUE: [80, 86, 78],
 };
 const BASE_KEY = '__tukiV2NBaseQuaternion';
 
@@ -31,6 +31,7 @@ export function setTukiFingerClosure(
   root: Object3D,
   finger: TukiFinger,
   closure: number,
+  clips: readonly AnimationClip[] = [],
 ): void {
   const f = Math.max(0, Math.min(1, Number.isFinite(closure) ? closure : 0));
   MAX_ANGLES[finger].forEach((deg, index) => {
@@ -40,14 +41,27 @@ export function setTukiFingerClosure(
       node.userData[BASE_KEY] = node.quaternion.toArray();
     }
     const base = new Quaternion().fromArray(node.userData[BASE_KEY]);
+    const clip = clips.find((candidate) => candidate.name === `CLOSE_${finger}`);
+    const track = clip?.tracks.find((candidate) => candidate.name === `${node.name}.quaternion`);
+    if (track && track.values.length >= 4) {
+      const endpoint = new Quaternion().fromArray(Array.from(track.values.slice(-4)));
+      const fullDelta = base.clone().invert().multiply(endpoint);
+      const partialDelta = new Quaternion().slerp(fullDelta, f);
+      node.quaternion.copy(base.multiply(partialDelta));
+      return;
+    }
     const delta = new Quaternion().setFromAxisAngle(AXIS_X, -deg * f * Math.PI / 180);
     node.quaternion.copy(base.multiply(delta));
   });
 };
 
-export function setTukiPose(root: Object3D, pose: Partial<TukiPose>): void {
+export function setTukiPose(
+  root: Object3D,
+  pose: Partial<TukiPose>,
+  clips: readonly AnimationClip[] = [],
+): void {
   for (const finger of Object.keys(MAX_ANGLES) as TukiFinger[]) {
-    if (pose[finger] !== undefined) setTukiFingerClosure(root, finger, pose[finger]!);
+    if (pose[finger] !== undefined) setTukiFingerClosure(root, finger, pose[finger]!, clips);
   }
 }
 

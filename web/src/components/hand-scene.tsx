@@ -13,14 +13,14 @@ type CameraView = { position: [number, number, number]; target: [number, number,
 
 const MODE_VIEWS: Record<EnclosureMode, CameraView> = {
   exterior: { position: [.34, .06, .79], target: [0, -.045, 0] },
-  interior: { position: [.48, .1, .75], target: [0, -.025, 0] },
+  interior: { position: [.62, .1, .42], target: [0, -.055, -.012] },
   exploded: { position: [.51, .14, .82], target: [0, -.025, 0] },
 };
 
 // Acerca el gemelo a la mano cuando Camera Tracking está activo y revela la
 // flexión en profundidad con un ángulo lateral de tres cuartos.
 const HAND_FOCUS_VIEW: CameraView = {
-  position: [.15, .14, -.29],
+  position: [.15, .14, .29],
   target: [-.027, .07, .006],
 };
 

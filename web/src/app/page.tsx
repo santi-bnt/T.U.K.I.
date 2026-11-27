@@ -6,7 +6,7 @@ import { MovementIntro } from "@/components/movement-intro";
 import { HomeArchitecture } from "@/components/home-architecture";
 
 function Mark({ kind }: { kind: string }) {
-  if (kind === "twin") return <div className="mark mark-twin" aria-hidden="true"><Image src="/images/tuki-v2y-exterior.png" alt="" fill sizes="(max-width: 760px) 50vw, 25vw" /></div>;
+  if (kind === "twin") return <div className="mark mark-twin" aria-hidden="true"><Image src="/images/tuki-v4-r1-exterior.png" alt="" fill sizes="(max-width: 760px) 50vw, 25vw" /></div>;
   if (kind === "gesture") return <div className="mark mark-gesture" aria-hidden="true"><span className="pose-label">FINGER INPUT</span><div className="pose-controls">{["T", "I", "M", "R", "P"].map((finger, i) => <i key={finger} className={`pose-track pose-track-${i}`}><b /><small>{finger}</small></i>)}</div><span className="pose-caption">FIVE INDEPENDENT CONTROLS</span></div>;
   if (kind === "voice") return <div className="mark mark-voice" aria-hidden="true"><span className="voice-mic"><Microphone /></span><span className="voice-wave">{[12, 22, 35, 17, 29, 10, 23, 15, 31, 12, 21].map((height, i) => <i key={i} style={{ height }} />)}</span></div>;
   if (kind === "record") return <div className="mark mark-record" aria-hidden="true"><div className="timeline-preview"><span>POSE TIMELINE</span><div><i /><i /><i /><i /><i /></div><small>00:00 <b /> 00:04</small></div></div>;
@@ -16,7 +16,7 @@ function Mark({ kind }: { kind: string }) {
 }
 function Microphone() { return <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3m-4 0h8"/></svg>; }
 const capabilities = [
-  ["twin", "DIGITAL TWIN", "The TUKI V2Y CAD model moves with your controls."],
+  ["twin", "DIGITAL TWIN", "The V2N hand and V4 R1 assembly move with your controls."],
   ["gesture", "GESTURE CONTROL", "Explore a small language of hand shapes."],
   ["voice", "VOICE INPUT", "Try browser-based commands in two languages."],
   ["record", "MOTION RECORDER", "Capture, arrange, and replay simulated poses."],
