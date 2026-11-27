@@ -112,7 +112,7 @@
 .tracking-metrics small{color:#92938b;font:7px var(--mono);text-transform:uppercase}
 .tracking-metrics b{overflow-wrap:anywhere;font-size:9px;font-weight:500}
 .finger-value-table{margin:0 12px 14px;border-top:1px solid #383933}
-.finger-value-row{display:grid;grid-template-columns:1fr .8fr .8fr;align-items:center;gap:8px;min-height:29px;border-bottom:1px solid #30312c;font:9px var(--mono)}
+.finger-value-row{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(52px,.8fr));align-items:center;gap:8px;min-height:29px;border-bottom:1px solid #30312c;font:9px var(--mono)}
 .finger-value-row.header{color:#8e8f87;font-size:7px;text-transform:uppercase;letter-spacing:.06em}
 .finger-value-row output{text-align:right;color:#d8c49e}
 .filter-diagnostics,.mock-transport-controls{display:grid;gap:10px;padding:0 12px 14px}

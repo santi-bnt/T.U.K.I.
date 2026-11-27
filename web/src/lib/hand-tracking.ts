@@ -11,7 +11,12 @@ export type HandTrackingStatus = "searching" | "tracking" | "lost";
 const EXTENDED_ANGLE_DEGREES = 165;
 // Una articulación humana suele aproximarse a 90° al cerrar el puño; 65°
 // exigía una flexión extrema y dejaba el valor normalizado cerca de 0.75.
-const CURLED_ANGLE_DEGREES = 100;
+const CURLED_ANGLE_DEGREES = 120;
+const FINGER_TIP_OPEN_DISTANCE = 2.35;
+const FINGER_TIP_CLOSED_DISTANCE = 1.15;
+const THUMB_OPPOSITION_OPEN_DISTANCE = 1.2;
+const THUMB_OPPOSITION_CLOSED_DISTANCE = 0.55;
+const MIN_CALIBRATION_SPAN = 0.08;
 const TRACKING_LOSS_GRACE_MS = 650;
 
 export interface OneEuroSettings {
@@ -50,6 +55,18 @@ function normalizedFlexion(angleDegrees: number): number {
     (EXTENDED_ANGLE_DEGREES - CURLED_ANGLE_DEGREES);
 }
 
+function normalizedRange(value: number, low: number, high: number): number {
+  return Math.max(0, Math.min(1, (value - low) / (high - low)));
+}
+
+function normalizedProximity(distance: number, openDistance: number, closedDistance: number): number {
+  return 1 - normalizedRange(distance, closedDistance, openDistance);
+}
+
+function distance(first: HandLandmark, second: HandLandmark): number {
+  return Math.hypot(first.x - second.x, first.y - second.y, first.z - second.z);
+}
+
 function jointAngleDegrees(
   first: HandLandmark,
   joint: HandLandmark,
@@ -78,34 +95,109 @@ function jointAngleDegrees(
   return (Math.acos(cosine) * 180) / Math.PI;
 }
 
+/** Keeps a short stable sample window from producing a one-frame calibration jump. */
+export function captureStableCalibrationPose(samples: readonly HandPose[]): HandPose | null {
+  if (samples.length < 5 || samples.some((sample) => !isNormalizedPose(sample))) return null;
+  const recentSamples = samples.slice(-9);
+  const pose = {} as HandPose;
+  for (const finger of FINGERS) {
+    const values = recentSamples.map((sample) => sample[finger]).sort((a, b) => a - b);
+    if (values[values.length - 1] - values[0] > 0.22) return null;
+    pose[finger] = values[Math.floor(values.length / 2)];
+  }
+  return pose;
+}
+
 /**
  * Converts MediaPipe's 21 landmarks into the existing normalized pose shape.
- * Each value averages two joint-angle estimates for that digit; this is a
- * visual heuristic, not a calibrated measurement of human joints or tendons.
+ * Long fingers use joint bend plus palm-relative tip distance; the thumb also
+ * uses opposition. These estimates are visual heuristics, not physical measurements.
  */
 export function interpretHandLandmarks(
   landmarks: readonly HandLandmark[],
+  imageAspectRatio = 1,
 ): HandPose | null {
+  return analyzeHandLandmarks(landmarks, imageAspectRatio)?.pose ?? null;
+}
+
+export interface HandLandmarkAnalysis {
+  pose: HandPose;
+  jointAnglesDegrees: Record<keyof HandPose, number[]>;
+  thumbOppositionRatio: number;
+  palmLength: number;
+}
+
+/**
+ * Estimates normalized flexion and exposes its measurements for diagnostics.
+ * MediaPipe x/z are width-normalized while y is height-normalized; aspect correction
+ * avoids distorting angles and normalized distances on non-square camera frames.
+ */
+export function analyzeHandLandmarks(
+  landmarks: readonly HandLandmark[],
+  imageAspectRatio = 1,
+): HandLandmarkAnalysis | null {
   if (landmarks.length < 21) return null;
   if (landmarks.some(({ x, y, z }) => ![x, y, z].every(Number.isFinite))) {
     return null;
   }
+  if (!Number.isFinite(imageAspectRatio) || imageAspectRatio < 0.1 || imageAspectRatio > 10) return null;
+
+  const points = landmarks.map(({ x, y, z }) => ({ x, y: y / imageAspectRatio, z }));
+  const wrist = points[0];
+  const palmLength = distance(wrist, points[9]);
+  if (palmLength < 1e-6) return null;
+  const palmCenter = [points[5], points[9], points[13], points[17]].reduce(
+    (center, point) => ({
+      x: center.x + point.x / 4,
+      y: center.y + point.y / 4,
+      z: center.z + point.z / 4,
+    }),
+    { x: 0, y: 0, z: 0 },
+  );
+  const thumbOppositionRatio = distance(points[4], palmCenter) / palmLength;
 
   const pose = {} as HandPose;
+  const anglesByFinger = {} as Record<keyof HandPose, number[]>;
   for (const [finger, joints] of Object.entries(fingerJoints) as Array<
     [keyof typeof fingerJoints, readonly (readonly [number, number, number])[]]
   >) {
-    const jointFlexions = joints.map(([firstIndex, jointIndex, lastIndex]) =>
-      normalizedFlexion(jointAngleDegrees(
-        landmarks[firstIndex],
-        landmarks[jointIndex],
-        landmarks[lastIndex],
-      )),
+    const angles = joints.map(([firstIndex, jointIndex, lastIndex]) =>
+      jointAngleDegrees(points[firstIndex], points[jointIndex], points[lastIndex]),
     );
-    pose[finger] = jointFlexions.reduce((sum, flexion) => sum + flexion, 0) / jointFlexions.length;
+    anglesByFinger[finger] = angles;
+    const angleFlexion = angles
+      .map(normalizedFlexion)
+      .reduce((sum, flexion) => sum + flexion, 0) / angles.length;
+
+    if (finger === "thumb") {
+      const opposition = normalizedProximity(
+        thumbOppositionRatio,
+        THUMB_OPPOSITION_OPEN_DISTANCE,
+        THUMB_OPPOSITION_CLOSED_DISTANCE,
+      );
+      const strongestThumbBend = Math.max(...angles.map(normalizedFlexion));
+      // Opposition catches a fist when perspective hides part of the thumb IP bend.
+      pose.thumb = 0.55 * strongestThumbBend + 0.45 * opposition;
+      continue;
+    }
+
+    const tipIndex = { index: 8, middle: 12, ring: 16, pinky: 20 }[finger];
+    const tipToWristInPalmLengths = distance(points[tipIndex], wrist) / palmLength;
+    const fingertipCurl = normalizedProximity(
+      tipToWristInPalmLengths,
+      FINGER_TIP_OPEN_DISTANCE,
+      FINGER_TIP_CLOSED_DISTANCE,
+    );
+    // Joint angles remain primary; palm proximity separates curled fingers from a partial bend.
+    pose[finger] = 0.8 * angleFlexion + 0.2 * fingertipCurl;
   }
 
-  return clampPose(pose);
+  return {
+    pose: clampPose(pose),
+    jointAnglesDegrees: anglesByFinger,
+    thumbOppositionRatio,
+    palmLength,
+  };
 }
 
 function isValidSettings(settings: OneEuroSettings): boolean {
@@ -151,8 +243,22 @@ class OneEuroScalarFilter {
     this.filteredDerivative = 0;
   }
 
+  clear(): void {
+    this.previousRaw = null;
+    this.previousTimestampMs = null;
+    this.filteredValue = null;
+    this.filteredDerivative = 0;
+  }
+
   filter(value: number, timestampMs: number, settings: OneEuroSettings): number {
     if (this.filteredValue === null || this.previousTimestampMs === null || this.previousRaw === null) {
+      this.reset(value, timestampMs);
+      return value;
+    }
+
+    // A clamped detector/calibration endpoint is deliberate. Keep the One Euro
+    // state there; the independent speed limiter still controls the visible travel.
+    if (value <= 0 || value >= 1) {
       this.reset(value, timestampMs);
       return value;
     }
@@ -191,6 +297,13 @@ export class HandPoseProcessor {
     this.maxFrameAgeMs = maxFrameAgeMs;
   }
 
+  /** Resets per-run filter state while preserving user settings and calibration. */
+  reset(): void {
+    for (const finger of FINGERS) this.filters[finger].clear();
+    this.previousOutput = { ...OPEN_HAND };
+    this.lastTimestampMs = null;
+  }
+
   configure(settings: OneEuroSettings, finger?: Finger): boolean {
     if (!isValidSettings(settings)) return false;
     if (finger) {
@@ -209,7 +322,7 @@ export class HandPoseProcessor {
     if (calibration && (!isNormalizedPose(calibration.open) || !isNormalizedPose(calibration.closed))) {
       return false;
     }
-    if (calibration && FINGERS.some((finger) => Math.abs(calibration.closed[finger] - calibration.open[finger]) < 0.05)) {
+    if (calibration && FINGERS.some((finger) => Math.abs(calibration.closed[finger] - calibration.open[finger]) < MIN_CALIBRATION_SPAN)) {
       return false;
     }
     this.openReference = calibration ? { ...calibration.open } : null;
@@ -219,12 +332,18 @@ export class HandPoseProcessor {
 
   calibrateOpen(pose: HandPose): boolean {
     if (!isNormalizedPose(pose)) return false;
+    if (this.closedReference && FINGERS.some((finger) =>
+      Math.abs(this.closedReference![finger] - pose[finger]) < MIN_CALIBRATION_SPAN,
+    )) return false;
     this.openReference = { ...pose };
     return true;
   }
 
   calibrateClosed(pose: HandPose): boolean {
     if (!isNormalizedPose(pose)) return false;
+    if (this.openReference && FINGERS.some((finger) =>
+      Math.abs(pose[finger] - this.openReference![finger]) < MIN_CALIBRATION_SPAN,
+    )) return false;
     this.closedReference = { ...pose };
     return true;
   }
@@ -260,7 +379,8 @@ export class HandPoseProcessor {
       const settings = this.settingsByFinger[finger];
       const filtered = this.filters[finger].filter(calibratedPose[finger], timestampMs, settings);
       const previous = this.previousOutput[finger];
-      const outsideDeadZone = Math.abs(filtered - previous) >= settings.deadZone;
+      const isIntentionalEndpoint = calibratedPose[finger] === 0 || calibratedPose[finger] === 1;
+      const outsideDeadZone = isIntentionalEndpoint || Math.abs(filtered - previous) >= settings.deadZone;
       const desired = outsideDeadZone ? filtered : previous;
       const maxDelta = settings.maxSpeedPerSecond * (elapsedMs / 1000);
       output[finger] = previous + Math.max(-maxDelta, Math.min(maxDelta, desired - previous));
