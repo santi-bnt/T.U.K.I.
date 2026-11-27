@@ -47,4 +47,4 @@ Camera Tracking, controls, and games operate only in the browser simulation. The
 
 From `web/`, run `npm run typecheck`, `npm run lint`, `npm test`, and `npm run build`. Run `node scripts/check-tuki-model.mjs` for the local GLB integrity check. The supplied migration package includes an additional strict release checker; these automated checks do not replace browser QA, physical validation, or licensing review.
 
-Start with [AGENTS.md](AGENTS.md), the [project specification](docs/PROJECT_SPEC.md), [architecture](docs/ARCHITECTURE.md), and [digital-twin notes](docs/DIGITAL_TWIN.md).
+Start with the [project specification](docs/PROJECT_SPEC.md), [architecture](docs/ARCHITECTURE.md), and [digital-twin notes](docs/DIGITAL_TWIN.md).
