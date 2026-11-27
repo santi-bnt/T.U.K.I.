@@ -124,4 +124,20 @@ describe("TUKI V2N + V4 R1 finger rig", () => {
     }
   });
 
+  it("maps HandPose thumb = 1 to the numeric CLOSE_PULGAR endpoint", () => {
+    const model = sourceScene.clone(true);
+    setTukiPose(model, { PULGAR: 1 }, sourceAnimations);
+    const clip = clips.get("CLOSE_PULGAR");
+    expect(clip, "Missing CLOSE_PULGAR").toBeDefined();
+
+    const angularErrorsRadians = [1, 2].map((jointIndex) => {
+      const joint = getJoint(model, "PULGAR", jointIndex);
+      const endpoint = clip!.get(joint.name);
+      expect(endpoint, `Missing endpoint for ${joint.name}`).toBeDefined();
+      return joint.quaternion.angleTo(endpoint!);
+    });
+
+    expect(Math.max(...angularErrorsRadians), "maximum quaternion error from CLOSE_PULGAR endpoint (radians)").toBeLessThan(0.002);
+  });
+
 });

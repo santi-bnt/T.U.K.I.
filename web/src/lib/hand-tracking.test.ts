@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { CLOSED_HAND, OPEN_HAND, type Finger } from "@/lib/motion";
 import {
   analyzeHandLandmarks,
+  captureStableCalibrationValue,
   captureStableCalibrationPose,
   DEFAULT_ONE_EURO_SETTINGS,
   HandPoseProcessor,
@@ -175,6 +176,10 @@ describe("camera pose processing", () => {
       pinky: 0.6,
     }));
     expect(captureStableCalibrationPose(stable)?.thumb).toBe(0.2);
+    const stableThumb = captureStableCalibrationValue(stable, "thumb");
+    expect(stableThumb?.value).toBe(0.2);
+    expect(stableThumb?.spread).toBeCloseTo(0.01);
+    expect(captureStableCalibrationValue(stable.slice(0, 4), "thumb")).toBeNull();
     expect(captureStableCalibrationPose(stable.slice(0, 4))).toBeNull();
     expect(captureStableCalibrationPose([...stable.slice(0, 6), { ...stable[6], thumb: 0.8 }])).toBeNull();
   });
@@ -228,14 +233,40 @@ describe("camera pose processing", () => {
     expect(processor.process(open, 0, 0).accepted).toBe(true);
   });
 
-  it("rejects unreliable calibration captures when a finger, especially the thumb, has no span", () => {
+  it("reports insufficient per-finger calibration span without blocking other fingers", () => {
     const processor = new HandPoseProcessor();
     const open = { ...OPEN_HAND, thumb: 0.2 };
     const almostSame = { ...CLOSED_HAND, thumb: 0.25 };
     expect(processor.calibrateOpen(open)).toBe(true);
-    expect(processor.calibrateClosed(almostSame)).toBe(false);
-    expect(processor.calibrateClosed({ ...CLOSED_HAND, thumb: 0.9 })).toBe(true);
-    expect(processor.calibrateOpen({ ...open, thumb: 0.85 })).toBe(false);
+    expect(processor.calibrateClosed(almostSame)).toBe(true);
+    const status = processor.getCalibrationStatus();
+    expect(status.thumb).toMatchObject({ open: 0.2, closed: 0.25, usable: false });
+    expect(status.thumb.span).toBeCloseTo(0.05);
+    expect(status.index.usable).toBe(true);
+    expect(processor.calibrateFinger("thumb", "closed", 0.9)).toBe(true);
+    expect(processor.getCalibrationStatus().thumb.usable).toBe(true);
+    processor.clearCalibrationForFinger("thumb");
+    expect(processor.getCalibrationStatus().thumb).toMatchObject({ open: null, closed: null, span: null, usable: false });
+  });
+
+  it("exposes detected, calibrated, and filtered poses as separate values", () => {
+    const processor = new HandPoseProcessor();
+    processor.configure({ ...DEFAULT_ONE_EURO_SETTINGS, minCutoffHz: 5, beta: 0, deadZone: 0, maxSpeedPerSecond: 10 });
+    processor.setCalibration({
+      open: { thumb: 0.1 },
+      closed: { thumb: 0.9 },
+    });
+    processor.reset();
+    const result = processor.process({ ...OPEN_HAND, thumb: 0.5, index: 0.6 }, 33, 33);
+    expect(result.accepted).toBe(true);
+    if (result.accepted) {
+      expect(result.rawPose.thumb).toBe(0.5);
+      expect(result.calibratedPose.thumb).toBeCloseTo(0.5);
+      expect(result.calibratedPose.index).toBe(0.6);
+      expect(result.filteredPose.thumb).toBeLessThan(result.calibratedPose.thumb);
+    }
+    const nextFrame = processor.process({ ...OPEN_HAND, thumb: 0.5, index: 0.6 }, 66, 66);
+    expect(nextFrame.accepted && nextFrame.filteredPose.thumb).toBeCloseTo(0.5);
   });
 
   it("maps a calibrated midpoint to half flexion and clamps in either capture direction", () => {

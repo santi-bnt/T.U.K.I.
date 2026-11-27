@@ -16,7 +16,7 @@ const FINGER_TIP_OPEN_DISTANCE = 2.35;
 const FINGER_TIP_CLOSED_DISTANCE = 1.15;
 const THUMB_OPPOSITION_OPEN_DISTANCE = 1.2;
 const THUMB_OPPOSITION_CLOSED_DISTANCE = 0.55;
-const MIN_CALIBRATION_SPAN = 0.08;
+export const MIN_CALIBRATION_SPAN = 0.08;
 const TRACKING_LOSS_GRACE_MS = 650;
 
 export interface OneEuroSettings {
@@ -35,10 +35,16 @@ export const DEFAULT_ONE_EURO_SETTINGS: OneEuroSettings = {
   maxSpeedPerSecond: 2.5,
 };
 
-export type FingerCalibration = { open: HandPose; closed: HandPose };
+export type FingerCalibration = { open: Partial<HandPose>; closed: Partial<HandPose> };
+export interface FingerCalibrationStatus {
+  open: number | null;
+  closed: number | null;
+  span: number | null;
+  usable: boolean;
+}
 
 export type PoseProcessingResult =
-  | { accepted: true; rawPose: HandPose; filteredPose: HandPose }
+  | { accepted: true; rawPose: HandPose; calibratedPose: HandPose; filteredPose: HandPose }
   | { accepted: false; reason: "invalid-pose" | "invalid-timestamp" | "stale" | "out-of-order" };
 
 const fingerJoints = {
@@ -96,14 +102,29 @@ function jointAngleDegrees(
 }
 
 /** Keeps a short stable sample window from producing a one-frame calibration jump. */
+export interface StableCalibrationValue {
+  value: number;
+  spread: number;
+}
+
+export function captureStableCalibrationValue(
+  samples: readonly HandPose[],
+  finger: Finger,
+): StableCalibrationValue | null {
+  if (samples.length < 5 || samples.some((sample) => !isNormalizedPose(sample))) return null;
+  const values = samples.slice(-9).map((sample) => sample[finger]).sort((a, b) => a - b);
+  const spread = values[values.length - 1] - values[0];
+  if (spread > 0.22) return null;
+  return { value: values[Math.floor(values.length / 2)], spread };
+}
+
 export function captureStableCalibrationPose(samples: readonly HandPose[]): HandPose | null {
   if (samples.length < 5 || samples.some((sample) => !isNormalizedPose(sample))) return null;
-  const recentSamples = samples.slice(-9);
   const pose = {} as HandPose;
   for (const finger of FINGERS) {
-    const values = recentSamples.map((sample) => sample[finger]).sort((a, b) => a - b);
-    if (values[values.length - 1] - values[0] > 0.22) return null;
-    pose[finger] = values[Math.floor(values.length / 2)];
+    const stableValue = captureStableCalibrationValue(samples, finger);
+    if (!stableValue) return null;
+    pose[finger] = stableValue.value;
   }
   return pose;
 }
@@ -124,6 +145,7 @@ export interface HandLandmarkAnalysis {
   pose: HandPose;
   jointAnglesDegrees: Record<keyof HandPose, number[]>;
   thumbOppositionRatio: number;
+  thumbSegmentLengthsInPalmLengths: [number, number, number];
   palmLength: number;
 }
 
@@ -155,6 +177,11 @@ export function analyzeHandLandmarks(
     { x: 0, y: 0, z: 0 },
   );
   const thumbOppositionRatio = distance(points[4], palmCenter) / palmLength;
+  const thumbSegmentLengthsInPalmLengths: [number, number, number] = [
+    distance(points[1], points[2]) / palmLength,
+    distance(points[2], points[3]) / palmLength,
+    distance(points[3], points[4]) / palmLength,
+  ];
 
   const pose = {} as HandPose;
   const anglesByFinger = {} as Record<keyof HandPose, number[]>;
@@ -196,6 +223,7 @@ export function analyzeHandLandmarks(
     pose: clampPose(pose),
     jointAnglesDegrees: anglesByFinger,
     thumbOppositionRatio,
+    thumbSegmentLengthsInPalmLengths,
     palmLength,
   };
 }
@@ -218,6 +246,12 @@ function isValidSettings(settings: OneEuroSettings): boolean {
 function isNormalizedPose(pose: HandPose): boolean {
   return FINGERS.every((finger) =>
     Number.isFinite(pose[finger]) && pose[finger] >= 0 && pose[finger] <= 1,
+  );
+}
+
+function isNormalizedPartialPose(pose: Partial<HandPose>): boolean {
+  return Object.entries(pose).every(([finger, value]) =>
+    FINGERS.includes(finger as Finger) && Number.isFinite(value) && value! >= 0 && value! <= 1,
   );
 }
 
@@ -287,8 +321,8 @@ export class HandPoseProcessor {
   private readonly settingsByFinger = Object.fromEntries(
     FINGERS.map((finger) => [finger, { ...DEFAULT_ONE_EURO_SETTINGS }]),
   ) as Record<Finger, OneEuroSettings>;
-  private openReference: HandPose | null = null;
-  private closedReference: HandPose | null = null;
+  private openReference: Partial<HandPose> = {};
+  private closedReference: Partial<HandPose> = {};
   private previousOutput: HandPose = { ...OPEN_HAND };
   private lastTimestampMs: number | null = null;
   private readonly maxFrameAgeMs: number;
@@ -319,45 +353,57 @@ export class HandPoseProcessor {
   }
 
   setCalibration(calibration: FingerCalibration | null): boolean {
-    if (calibration && (!isNormalizedPose(calibration.open) || !isNormalizedPose(calibration.closed))) {
-      return false;
-    }
-    if (calibration && FINGERS.some((finger) => Math.abs(calibration.closed[finger] - calibration.open[finger]) < MIN_CALIBRATION_SPAN)) {
-      return false;
-    }
-    this.openReference = calibration ? { ...calibration.open } : null;
-    this.closedReference = calibration ? { ...calibration.closed } : null;
+    if (calibration && (!isNormalizedPartialPose(calibration.open) || !isNormalizedPartialPose(calibration.closed))) return false;
+    this.openReference = calibration ? { ...calibration.open } : {};
+    this.closedReference = calibration ? { ...calibration.closed } : {};
     return true;
   }
 
   calibrateOpen(pose: HandPose): boolean {
     if (!isNormalizedPose(pose)) return false;
-    if (this.closedReference && FINGERS.some((finger) =>
-      Math.abs(this.closedReference![finger] - pose[finger]) < MIN_CALIBRATION_SPAN,
-    )) return false;
     this.openReference = { ...pose };
     return true;
   }
 
   calibrateClosed(pose: HandPose): boolean {
     if (!isNormalizedPose(pose)) return false;
-    if (this.openReference && FINGERS.some((finger) =>
-      Math.abs(pose[finger] - this.openReference![finger]) < MIN_CALIBRATION_SPAN,
-    )) return false;
     this.closedReference = { ...pose };
     return true;
   }
 
-  clearCalibration(): void {
-    this.openReference = null;
-    this.closedReference = null;
+  calibrateFinger(finger: Finger, kind: "open" | "closed", value: number): boolean {
+    if (!Number.isFinite(value) || value < 0 || value > 1) return false;
+    if (kind === "open") this.openReference = { ...this.openReference, [finger]: value };
+    else this.closedReference = { ...this.closedReference, [finger]: value };
+    return true;
   }
 
-  getCalibration(): { open: HandPose | null; closed: HandPose | null } {
+  clearCalibrationForFinger(finger: Finger): void {
+    this.openReference = { ...this.openReference };
+    this.closedReference = { ...this.closedReference };
+    delete this.openReference[finger];
+    delete this.closedReference[finger];
+  }
+
+  clearCalibration(): void {
+    this.openReference = {};
+    this.closedReference = {};
+  }
+
+  getCalibration(): { open: Partial<HandPose> | null; closed: Partial<HandPose> | null } {
     return {
-      open: this.openReference ? { ...this.openReference } : null,
-      closed: this.closedReference ? { ...this.closedReference } : null,
+      open: Object.keys(this.openReference).length ? { ...this.openReference } : null,
+      closed: Object.keys(this.closedReference).length ? { ...this.closedReference } : null,
     };
+  }
+
+  getCalibrationStatus(): Record<Finger, FingerCalibrationStatus> {
+    return Object.fromEntries(FINGERS.map((finger) => {
+      const open = this.openReference[finger] ?? null;
+      const closed = this.closedReference[finger] ?? null;
+      const span = open !== null && closed !== null ? Math.abs(closed - open) : null;
+      return [finger, { open, closed, span, usable: span !== null && span >= MIN_CALIBRATION_SPAN }];
+    })) as Record<Finger, FingerCalibrationStatus>;
   }
 
   process(rawPose: HandPose, timestampMs: number, nowMs = timestampMs): PoseProcessingResult {
@@ -388,7 +434,7 @@ export class HandPoseProcessor {
 
     this.lastTimestampMs = timestampMs;
     this.previousOutput = output;
-    return { accepted: true, rawPose: { ...rawPose }, filteredPose: output };
+    return { accepted: true, rawPose: { ...rawPose }, calibratedPose: { ...calibratedPose }, filteredPose: output };
   }
 
   /** Re-seeds the filters at the current output after a tracking gap. */
@@ -400,11 +446,13 @@ export class HandPoseProcessor {
   }
 
   private applyCalibration(pose: HandPose): HandPose {
-    if (!this.openReference || !this.closedReference) return { ...pose };
     return Object.fromEntries(FINGERS.map((finger) => {
-      const open = this.openReference![finger];
-      const range = this.closedReference![finger] - open;
-      const normalized = Math.abs(range) < 0.05 ? pose[finger] : (pose[finger] - open) / range;
+      const open = this.openReference[finger];
+      const closed = this.closedReference[finger];
+      if (open === undefined || closed === undefined || Math.abs(closed - open) < MIN_CALIBRATION_SPAN) {
+        return [finger, pose[finger]];
+      }
+      const normalized = (pose[finger] - open) / (closed - open);
       return [finger, Math.max(0, Math.min(1, normalized))];
     })) as HandPose;
   }

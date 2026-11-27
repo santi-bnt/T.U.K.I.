@@ -6,9 +6,10 @@ import { FINGERS, OPEN_HAND, type Finger, type HandPose } from "@/lib/motion";
 import {
   DEFAULT_ONE_EURO_SETTINGS,
   analyzeHandLandmarks,
-  captureStableCalibrationPose,
+  captureStableCalibrationValue,
   getHandTrackingStatus,
   HandPoseProcessor,
+  MIN_CALIBRATION_SPAN,
   type HandLandmark,
   type OneEuroSettings,
 } from "@/lib/hand-tracking";
@@ -28,6 +29,26 @@ type CameraStatus =
   | "stopped";
 
 type DeviceOption = { id: string; label: string };
+type DiagnosticLabel = "open" | "partial" | "closed";
+interface NumericDiagnosticFrame {
+  timestampMs: number;
+  aspectRatio: number;
+  landmarks: HandLandmark[];
+  detectedPose: HandPose;
+  calibratedPose: HandPose;
+  filteredPose: HandPose;
+  controllerPose: HandPose;
+  controllerAccepted: boolean;
+  thumb: {
+    jointAnglesDegrees: number[];
+    oppositionRatio: number;
+    segmentLengthsInPalmLengths: [number, number, number];
+  };
+}
+interface TaggedDiagnosticSample {
+  label: DiagnosticLabel;
+  frames: NumericDiagnosticFrame[];
+}
 type WorkerResponse =
   | { type: "ready"; delegate: "GPU" | "CPU" }
   | { type: "result"; landmarks: HandLandmark[] | null; timestampMs: number }
@@ -144,6 +165,8 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
   const lastProcessedTimestampRef = useRef<number | null>(null);
   const lastSeenAtRef = useRef<number | null>(null);
   const calibrationSamplesRef = useRef<HandPose[]>([]);
+  const diagnosticFrameHistoryRef = useRef<NumericDiagnosticFrame[]>([]);
+  const taggedDiagnosticSamplesRef = useRef<TaggedDiagnosticSample[]>([]);
   const lastTrackingStateRef = useRef<MockTrackingState>("stopped");
   const processorRef = useRef(new HandPoseProcessor());
   const fpsWindowRef = useRef({ startedAt: 0, frames: 0 });
@@ -155,13 +178,17 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const [landmarks, setLandmarks] = useState<HandLandmark[]>([]);
   const [rawPose, setRawPose] = useState<HandPose | null>(null);
+  const [calibratedPose, setCalibratedPose] = useState<HandPose | null>(null);
   const [thumbGeometry, setThumbGeometry] = useState<{ oppositionRatio: number; angles: number[] } | null>(null);
+  const [thumbSegments, setThumbSegments] = useState<[number, number, number] | null>(null);
   const [filteredPose, setFilteredPose] = useState<HandPose>({ ...OPEN_HAND });
   const [mirrored, setMirrored] = useState(true);
   const [videoSize, setVideoSize] = useState({ width: 4, height: 3 });
   const [selectedFilterFinger, setSelectedFilterFinger] = useState<Finger>("thumb");
   const [filterSettings, setFilterSettings] = useState<OneEuroSettings>({ ...DEFAULT_ONE_EURO_SETTINGS });
-  const [calibration, setCalibration] = useState<{ open: HandPose | null; closed: HandPose | null }>({ open: null, closed: null });
+  const [calibrationStatus, setCalibrationStatus] = useState(() => processorRef.current.getCalibrationStatus());
+  const [diagnosticSampleCount, setDiagnosticSampleCount] = useState(0);
+  const [lastProcessingIssue, setLastProcessingIssue] = useState<string | null>(null);
   const [fps, setFps] = useState(0);
   const [inferenceLatencyMs, setInferenceLatencyMs] = useState<number | null>(null);
 
@@ -201,6 +228,7 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
     lastSeenAtRef.current = null;
     setLandmarks([]);
     calibrationSamplesRef.current = [];
+    diagnosticFrameHistoryRef.current = [];
   }, []);
 
   const stopTracking = useCallback((reason?: string) => {
@@ -219,7 +247,9 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
     releaseCamera();
     setLandmarks([]);
     setRawPose(null);
+    setCalibratedPose(null);
     calibrationSamplesRef.current = [];
+    diagnosticFrameHistoryRef.current = [];
     setFilteredPose({ ...OPEN_HAND });
     setFps(0);
     setInferenceLatencyMs(null);
@@ -344,6 +374,7 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
         const trackingState = getHandTrackingStatus(hasHand, lastSeenAtRef.current, nowMs);
         if (!hasHand) {
           calibrationSamplesRef.current = [];
+          diagnosticFrameHistoryRef.current = [];
           if (trackingState === "lost") {
             updateStatus("lost", "Hand not detected. The last pose is held until tracking returns.");
             if (!reportTrackingState("lost", nowMs)) {
@@ -374,6 +405,7 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
         }
         const interpretedPose = analysis.pose;
         setThumbGeometry({ oppositionRatio: analysis.thumbOppositionRatio, angles: analysis.jointAnglesDegrees.thumb });
+        setThumbSegments(analysis.thumbSegmentLengthsInPalmLengths);
         setRawPose(interpretedPose);
         calibrationSamplesRef.current = [...calibrationSamplesRef.current, interpretedPose].slice(-9);
         if (wasLost) {
@@ -388,14 +420,32 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
 
         const processed = processorRef.current.process(interpretedPose, data.timestampMs, nowMs);
         if (!processed.accepted) {
+          setLastProcessingIssue(`Pose processing rejected this frame: ${processed.reason}.`);
           updateStatus("stale", `Frame rejected by the pose filter (${processed.reason}).`);
           return;
         }
+        setLastProcessingIssue(null);
+        setCalibratedPose(processed.calibratedPose);
         setFilteredPose(processed.filteredPose);
         const accepted = controller.submit("camera", processed.filteredPose, nowMs, {
           state: "tracking",
           valid: true,
         });
+        diagnosticFrameHistoryRef.current = [...diagnosticFrameHistoryRef.current, {
+          timestampMs: data.timestampMs,
+          aspectRatio,
+          landmarks: data.landmarks!.map(({ x, y, z }) => ({ x, y, z })),
+          detectedPose: processed.rawPose,
+          calibratedPose: processed.calibratedPose,
+          filteredPose: processed.filteredPose,
+          controllerPose: { ...controller.getSnapshot().pose },
+          controllerAccepted: accepted,
+          thumb: {
+            jointAnglesDegrees: [...analysis.jointAnglesDegrees.thumb],
+            oppositionRatio: analysis.thumbOppositionRatio,
+            segmentLengthsInPalmLengths: [...analysis.thumbSegmentLengthsInPalmLengths] as [number, number, number],
+          },
+        }].slice(-12);
         if (!accepted) {
           stopTracking("Camera stopped because a higher-priority input took control. Press Start to reactivate it.");
           return;
@@ -497,20 +547,62 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
   };
 
   const captureCalibration = (kind: "open" | "closed") => {
-    const stablePose = captureStableCalibrationPose(calibrationSamplesRef.current);
-    if (!stablePose) {
-      setMessage("Hold the pose steady in view for several frames before capturing calibration.");
+    const finger = selectedFilterFinger;
+    const stableValue = captureStableCalibrationValue(calibrationSamplesRef.current, finger);
+    if (!stableValue) {
+      setMessage(`Hold ${FINGER_LABELS[finger]} steady for at least five valid frames before calibration.`);
       return;
     }
-    const success = kind === "open"
-      ? processorRef.current.calibrateOpen(stablePose)
-      : processorRef.current.calibrateClosed(stablePose);
+    const success = processorRef.current.calibrateFinger(finger, kind, stableValue.value);
     if (success) {
-      setCalibration(processorRef.current.getCalibration());
-      setMessage(`${kind === "open" ? "Open" : "Closed"} reference captured from the current raw detection.`);
+      const nextStatus = processorRef.current.getCalibrationStatus();
+      setCalibrationStatus(nextStatus);
+      const fingerStatus = nextStatus[finger];
+      if (fingerStatus.open !== null && fingerStatus.closed !== null && !fingerStatus.usable) {
+        setMessage(`${FINGER_LABELS[finger]} calibration span is ${fingerStatus.span?.toFixed(3)}; at least ${MIN_CALIBRATION_SPAN.toFixed(2)} is required. Keep this finger clearly open/closed or leave it uncalibrated.`);
+      } else {
+        setMessage(`${kind === "open" ? "Open" : "Closed"} ${FINGER_LABELS[finger]} reference captured from a stable median (${stableValue.value.toFixed(3)}; frame spread ${stableValue.spread.toFixed(3)}).`);
+      }
     } else {
-      setMessage("Calibration was not changed: keep the same hand in view and capture clearly distinct open and closed poses, especially for the thumb.");
+      setMessage(`Could not capture ${FINGER_LABELS[finger]} calibration; the measurement was invalid.`);
     }
+  };
+
+  const markDiagnosticPose = (label: DiagnosticLabel) => {
+    const frames = diagnosticFrameHistoryRef.current.slice(-8);
+    if (frames.length < 5) {
+      setMessage("Collect at least five valid frames before marking a diagnostic pose.");
+      return;
+    }
+    taggedDiagnosticSamplesRef.current = [
+      ...taggedDiagnosticSamplesRef.current,
+      { label, frames },
+    ].slice(-60);
+    setDiagnosticSampleCount(taggedDiagnosticSamplesRef.current.length);
+    setMessage(`Stored ${frames.length} numeric landmark frames labeled ${label}. No image or video was stored.`);
+  };
+
+  const downloadDiagnosticSamples = () => {
+    if (taggedDiagnosticSamplesRef.current.length === 0) return;
+    const exportData = {
+      format: "TUKI-camera-landmark-diagnostics",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      containsImagesOrVideo: false,
+      note: "Normalized MediaPipe landmarks and numeric pose stages only; timestamps use the browser performance clock.",
+      samples: taggedDiagnosticSamplesRef.current,
+    };
+    const blobUrl = URL.createObjectURL(new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" }));
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = `tuki-camera-landmarks-${new Date().toISOString().replaceAll(":", "-")}.json`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(blobUrl), 0);
+  };
+
+  const clearDiagnosticSamples = () => {
+    taggedDiagnosticSamplesRef.current = [];
+    setDiagnosticSampleCount(0);
   };
 
   const updateMockSetting = (key: keyof typeof snapshot.transport, value: number | boolean) => {
@@ -570,18 +662,20 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
           <div><small>Active source</small><b>{snapshot.activeSource}</b></div>
         </div>
 
-        <div className="finger-value-table" role="table" aria-label="Raw and filtered finger values">
-          <div className="finger-value-row header" role="row"><span>Finger</span><span>Detected</span><span>Filtered</span><span>Controller</span></div>
+        <div className="finger-value-table" role="table" aria-label="Detected, calibrated, filtered, and controller finger values">
+          <div className="finger-value-row header" role="row"><span>Finger</span><span>Detected</span><span>Calibrated</span><span>Filtered</span><span>Controller</span></div>
           {FINGERS.map((finger) => <div className="finger-value-row" role="row" key={finger}>
-            <span>{FINGER_LABELS[finger]}</span><output>{formatValue(rawPose?.[finger] ?? null)}</output><output>{formatValue(filteredPose[finger])}</output><output>{formatValue(snapshot.pose[finger])}</output>
+            <span>{FINGER_LABELS[finger]}</span><output>{formatValue(rawPose?.[finger] ?? null)}</output><output>{formatValue(calibratedPose?.[finger] ?? null)}</output><output>{formatValue(filteredPose[finger])}</output><output>{formatValue(snapshot.pose[finger])}</output>
           </div>)}
         </div>
         <div className="tracking-metrics">
           <div><small>Thumb opposition / palm length</small><b>{thumbGeometry ? `${thumbGeometry.oppositionRatio.toFixed(2)}×` : "—"}</b></div>
           <div><small>Thumb MCP / IP angle</small><b>{thumbGeometry ? thumbGeometry.angles.map((angle) => `${Math.round(angle)}°`).join(" / ") : "—"}</b></div>
+          <div><small>Thumb segment lengths / palm</small><b>{thumbSegments ? thumbSegments.map((length) => length.toFixed(2)).join(" / ") : "—"}</b></div>
           <div><small>Pose path</small><b>Detected → filtered → controller → GLB rig</b></div>
         </div>
-        <p className="camera-limit-note">The Controller column is the pose accepted by the shared motion controller. The GLB rig maps 1 to each supplied CLOSE clip endpoint (covered by automated tests); camera behavior still needs a physical-device check.</p>
+        {lastProcessingIssue && <p className="camera-feedback" role="status">{lastProcessingIssue}</p>}
+        <p className="camera-limit-note">Detected is the landmark estimate; Calibrated applies the per-finger open/closed references; Filtered applies One Euro, deadband, and speed limits; Controller is the pose accepted by the shared controller. Automated GLB checks compare HandPose 1 to the CLOSE_PULGAR endpoint; physical camera behavior remains unverified.</p>
 
         <div className="filter-diagnostics">
           <div className="filter-diagnostics-heading"><h3>One Euro filter and motion limits</h3><label>Finger<select value={selectedFilterFinger} onChange={(event) => changeFilterFinger(event.target.value as Finger)}>{FINGERS.map((finger) => <option key={finger} value={finger}>{FINGER_LABELS[finger]}</option>)}</select></label></div>
@@ -594,11 +688,38 @@ export function CameraTracking({ controller }: { controller: HandMotionControlle
         </div>
 
         <div className="hand-calibration">
-          <div><h3>Optional hand calibration</h3><p>Hold an open or closed pose steady for several frames before capture. Calibration changes only the camera-to-simulation mapping.</p></div>
-          <button className="button button-muted" onClick={() => captureCalibration("open")} disabled={!rawPose || calibrationSamplesRef.current.length < 5}>Capture open</button>
-          <button className="button button-muted" onClick={() => captureCalibration("closed")} disabled={!rawPose || calibrationSamplesRef.current.length < 5}>Capture closed</button>
-          <button className="button button-quiet" onClick={() => { processorRef.current.clearCalibration(); setCalibration({ open: null, closed: null }); }}>Clear</button>
-          <span>{calibration.open && calibration.closed ? "Open and closed references active" : calibration.open || calibration.closed ? "Capture both references to calibrate" : "Default joint-angle mapping"}</span>
+          <div><h3>Per-finger camera calibration</h3><p>Choose a finger above, hold it steady for at least five frames, and capture its open and closed references. This only maps camera estimates to simulation values.</p></div>
+          <button className="button button-muted" onClick={() => captureCalibration("open")} disabled={!rawPose || calibrationSamplesRef.current.length < 5}>Capture {FINGER_LABELS[selectedFilterFinger]} open</button>
+          <button className="button button-muted" onClick={() => captureCalibration("closed")} disabled={!rawPose || calibrationSamplesRef.current.length < 5}>Capture {FINGER_LABELS[selectedFilterFinger]} closed</button>
+          <button className="button button-quiet" onClick={() => {
+            processorRef.current.clearCalibrationForFinger(selectedFilterFinger);
+            setCalibrationStatus(processorRef.current.getCalibrationStatus());
+          }}>Clear selected</button>
+          <button className="button button-quiet" onClick={() => {
+            processorRef.current.clearCalibration();
+            setCalibrationStatus(processorRef.current.getCalibrationStatus());
+          }}>Clear all</button>
+          <div className="finger-value-table calibration-status-table" role="table" aria-label="Per-finger calibration range">
+            <div className="finger-value-row header" role="row"><span>Finger</span><span>Open</span><span>Closed</span><span>Span</span><span>Status</span></div>
+            {FINGERS.map((finger) => {
+              const item = calibrationStatus[finger];
+              return <div className="finger-value-row" role="row" key={finger}>
+                <span>{FINGER_LABELS[finger]}</span><output>{formatValue(item.open)}</output><output>{formatValue(item.closed)}</output><output>{formatValue(item.span)}</output><output>{item.usable ? "Ready" : item.span === null ? "Need both" : `Need ≥${MIN_CALIBRATION_SPAN.toFixed(2)}`}</output>
+              </div>;
+            })}
+          </div>
+        </div>
+
+        <div className="tracking-diagnostics">
+          <h3>Numeric landmark sample capture</h3>
+          <p>Hold each pose steady, then tag the latest valid frames. Export contains landmark coordinates and numeric pipeline stages only—no image or video.</p>
+          <div className="diagnostic-capture-actions">
+            <button className="button button-muted" onClick={() => markDiagnosticPose("open")} disabled={diagnosticFrameHistoryRef.current.length < 5}>Mark open</button>
+            <button className="button button-muted" onClick={() => markDiagnosticPose("partial")} disabled={diagnosticFrameHistoryRef.current.length < 5}>Mark partial</button>
+            <button className="button button-muted" onClick={() => markDiagnosticPose("closed")} disabled={diagnosticFrameHistoryRef.current.length < 5}>Mark fist closed</button>
+            <button className="button button-light" onClick={downloadDiagnosticSamples} disabled={diagnosticSampleCount === 0}>Download JSON ({diagnosticSampleCount})</button>
+            <button className="button button-quiet" onClick={clearDiagnosticSamples} disabled={diagnosticSampleCount === 0}>Clear samples</button>
+          </div>
         </div>
 
         <div className="mock-transport-controls">

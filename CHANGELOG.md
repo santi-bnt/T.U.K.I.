@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased - Camera Tracking diagnostic samples
+
+- Added separate detected, calibrated, filtered, and controller pose readouts, with per-finger calibration span and thumb geometry metrics.
+- Added explicit local JSON export for labeled open, partial, and closed hand samples. The export contains numeric landmarks and pose stages only, with no images or video.
+- Added a GLB test confirming HandPose thumb closure 1 matches the CLOSE_PULGAR clip endpoint. No detector thresholds were changed without real camera samples.
+
 ## Unreleased - TUKI V2N + V4 R1 web assembly
 
 - Replaced the procedural active model with the supplied V2N + V4 R1 GLB and five nominal SG90 references. Home and Studio share it; Technology uses captures from the same viewer.
