@@ -24,4 +24,8 @@ No backend is needed for the first phase. Versioned local storage provides brows
 
 ## Monorepo and camera-led interaction
 
-Deploy the independent Next.js project from `web/`. Reserve `firmware/nxp/` for future hand-controller code. Camera-based input is the intended interaction direction. Keep the browser simulation fully functional independently; camera capture and vision-based interpretation remain planned work.
+Deploy the independent Next.js project from `web/`. Reserve `firmware/nxp/` for future hand-controller code. Camera tracking is an optional browser simulation input implemented in Studio; it estimates finger flexion from MediaPipe landmarks and shares the existing normalized pose path. Keep manual simulation independent. Semantic camera gesture recognition, calibrated motion, and physical device control remain out of scope.
+
+## Single-owner pose and MOCK packet boundary (2026-11-26)
+
+Studio inputs submit through `HandMotionController`, which arbitrates one normalized pose with a fixed priority: manual > gesture/voice > game > sequence > camera. Explicitly selecting a mode can reactivate its source. Accepted values are recorded by an in-memory `TUKI-MOCK` v1 adapter for transport diagnostics; packet delay/loss/error/disconnect simulation does not open a socket, serial port, or hardware path. Keep this DTO separate from the future ESP32 wire protocol until physical calibration and integration are explicitly designed.

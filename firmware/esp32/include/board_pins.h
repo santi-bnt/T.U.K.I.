@@ -1,0 +1,9 @@
+#ifndef TUKI_ESP32_BOARD_PINS_H
+#define TUKI_ESP32_BOARD_PINS_H
+
+/* ESP32 classic Dev module: UART2 TX -> KL25Z UART1_RX, RX <- UART1_TX. */
+#define TUKI_UART2_RX_GPIO 16
+#define TUKI_UART2_TX_GPIO 17
+#define TUKI_UART_BAUD 115200UL
+
+#endif

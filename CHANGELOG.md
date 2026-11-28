@@ -1,18 +1,65 @@
 # Changelog
 
-## Unreleased - Camera Tracking diagnostic samples
+## Unreleased — Camera Tracking diagnostics for fist closure
 
-- Added separate detected, calibrated, filtered, and controller pose readouts, with per-finger calibration span and thumb geometry metrics.
-- Added explicit local JSON export for labeled open, partial, and closed hand samples. The export contains numeric landmarks and pose stages only, with no images or video.
-- Added a GLB test confirming HandPose thumb closure 1 matches the CLOSE_PULGAR clip endpoint. No detector thresholds were changed without real camera samples.
+- Added separate detected, per-finger calibrated, filtered, and controller pose readouts, plus thumb joint angles, palm opposition, and segment lengths.
+- Added local JSON capture of labeled open, partial, and closed landmark samples. Exports contain numeric landmarks and pose stages only; they do not contain or upload camera images/video.
+- Calibration now records each finger independently and reports when its measured open/closed span is below the minimum. Added a numeric GLB test comparing thumb `HandPose = 1` with `CLOSE_PULGAR`.
+- Documented the current evidence: the reported controller values do not identify the reducing stage without real landmark samples; no new detector thresholds were selected.
 
-## Unreleased - TUKI V2N + V4 R1 web assembly
+## Unreleased — ensamblaje visual web TUKI V2N + V4 R1
 
-- Replaced the procedural active model with the supplied V2N + V4 R1 GLB and five nominal SG90 references. Home and Studio share it; Technology uses captures from the same viewer.
-- Exterior, Interior, and Exploded use the GLB's named nodes and hinge pivots. Exploded offsets are presentation-only.
-- Preserved HandPose, five independent joints, Camera Tracking, filters, controller arbitration, MOCK transport, games, and voice. Finger closure follows the supplied CLOSE_* clip endpoints.
-- Added the GLB checker and browser route verification. The source GLB is unchanged; missing normals are computed only on cloned render geometry.
-- No physical fit or collision validation is claimed. CAD, STL, STEP, firmware, and print files are not part of this release.
+- Sustituido el modelo procedural activo por el ensamblaje GLB V2N + V4 R1 suministrado, con cinco referencias SG90, antebrazo, puertas, gabinete, muñeca y poleas. Home y Studio comparten el mismo modelo; Technology usa capturas del visor.
+- Adaptados Exterior, Interior y Exploded a los nombres y pivotes de bisagra reales del GLB. Exploded usa desplazamientos solo de presentación y las puertas abren alrededor de sus pivotes del ensamblaje.
+- El rig mantiene `HandPose` y las cinco articulaciones independientes. La flexión interpola hacia los extremos de los clips `CLOSE_*` del propio GLB; Camera Tracking, prioridades de fuente, juegos, voz y transporte MOCK siguen en su arquitectura existente.
+- Añadido un verificador estructural del nuevo GLB y capturas de navegador de exterior, interior y poses abierta/cerrada. El archivo GLB de origen se conserva byte a byte; las normales ausentes se calculan solo en geometrías clonadas para render.
+- La visualización no valida encajes, colisiones físicas, recorrido de tendones ni dimensiones reales de los SG90. No se modificaron CAD, STL, STEP, firmware ni archivos de impresión.
+
+## Historical — procedural web visual model (superseded 2026-11-26)
+
+- Earlier iteration generated `web/public/models/tuki-web-visual.glb` from web-only procedural geometry and used it as the presentation model. The active site now uses the supplied V2N + V4 R1 assembly described above.
+- That iteration retained normalized `HandPose`, five independent fingers, and five `CLOSE_*` clips, and corrected the procedural model's thumb pivot and viewer-only door pivots.
+- Its before/after, open/fist, interior, exploded, and camera-view captures remain under `docs/visual-review/` as historical review artifacts.
+- The procedural asset is not fabrication geometry. No CAD, STL, STEP, firmware, or physical validation was changed or claimed in that iteration.
+
+## Unreleased — digital twin pose and presentation review
+
+- Camera flexion now maps typical 90° human finger-joint bends to full normalized closure; the controller still forwards the accepted five-finger pose unchanged.
+- Added GLB-backed checks for each finger and simultaneous poses at 0%, 25%, 50%, 75%, and 100%; the full pose is compared with the supplied `CLOSE_*` clips.
+- Improved the web-only TUKI render by generating crease-aware normals for the hand's normal-free CAD meshes, applying satin polymer materials and local studio environment lighting, and focusing the Camera Tracking view on the hand.
+- Camera Tracking now keeps the camera preview and digital hand visible together on desktop and mobile. No GLB, CAD, STL, firmware, or physical geometry changed.
+
+## Unreleased — Camera Tracking simulation
+
+- Added configurable per-finger One Euro filtering, a dead zone and normalized speed limit; validates poses and frame timestamps, drops stale/out-of-order data, and re-seeds filters after tracking loss.
+- Added optional open/closed camera-to-simulation calibration, raw/filtered value diagnostics, filter controls, tracking/FPS/latency display, and a bounded monitor of mock controller packet events.
+- Added `HandMotionController` as Studio's sole `HandPose` owner with fixed source priorities, and an in-memory version-1 MOCK packet adapter that simulates acknowledgements, invalid commands, ordering, delay, loss, errors, and disconnects without real connectivity.
+- Camera frames are not uploaded or sent to physical hardware. Updated docs to distinguish simulation calibration from physical servo calibration and record that real webcam/phone operation is still untested.
+
+## V4 mechanical work
+
+- Added a root `imprimir/` selection for V4 R1: three first-print coupons, corrected structural pieces, ten M3 clamps, the pulley candidate, and the hinge-pin/cap bed. Older hand-print beds remain untouched; historical package ZIPs and root-level imported STL files were moved to the ignored local archive, not deleted.
+
+- Added the R1 coaxial hinge bore cuts and the local M3-05 nut relief. The maintenance sequence frees T1 before using the left access.
+
+- Consolidated the supplied D8 access, M3 clamp, hinge pin and thread-passage
+  patches with wrist 03. The initial pre-R1 CAD audit identified hinge pin
+  interference, a mounting nut overlap and a tool path across the first tendon.
+
+- Added reproducible STEP interference and door checks, plus a parametric prototype wrist with negative-X tendon routing and local export. Assembly and printing remain subject to the V4 physical checks.
+
+## Unreleased — firmware inicial ESP32 + FRDM-KL25Z
+
+- Añadidos proyectos PlatformIO para ESP32 Dev y aplicación C para importar en un proyecto base MCUXpresso SDK de FRDM-KL25Z. UART2↔UART1 comparte un parser ASCII estricto y el ESP32 ofrece consola USB; la API HTTP local Wi-Fi es opcional y requiere credenciales/token locales excluidos de Git.
+- Añadido driver de cinco canales TPM0 a 50 Hz, configuración de límites/inversión por dedo, interpolación limitada, watchdog y política de comunicación: desarmado al inicio, PWM bajo en DISARM o timeout, sin afirmar corte de alimentación. Todos los servos siguen deshabilitados hasta calibración/configuración explícita.
+- El host test del parser está incluido. No se compilaron ni cargaron los firmwares ni se probaron UART, servos o Wi-Fi físicamente: faltan PlatformIO, MCUXpresso SDK/toolchain y las placas en el entorno.
+
+## Unreleased — V2Y PRO visual presentation
+
+- Integrated the owner-supplied V2Y PRO GLB. It adds web-only door liners, backplates, visual servo details, and a conceptual electronics-board placeholder while preserving the existing V2Y mechanical meshes, hinge parents, five finger joints, and five clips.
+- Kept Exterior, Interior, and Exploded controls, five finger controls, games, voice input, and the existing camera transition. Increased the Canvas pixel-ratio cap to improve detail on high-density displays.
+- The PRO model is about 16% larger on disk and has about 13% more vertices than the prior visual GLB. Actual low-end mobile hardware performance remains unmeasured; see `docs/DIGITAL_TWIN.md` for the visual-only electronics limitations.
+- Typecheck, lint, 11 unit tests, production build, and both GLB validators pass. No CAD, STL, or firmware files were changed.
 
 ## Unreleased — V2Y articulated enclosure doors
 

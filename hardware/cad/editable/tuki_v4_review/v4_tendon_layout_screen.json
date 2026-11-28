@@ -1,0 +1,106 @@
+{
+  "scope": "XY screening only; not 3D CAD/solid or physical validation",
+  "pulley_diameter_mm": 28.0,
+  "tendon_diameter_assumption_mm": 1.6,
+  "plus_x_tangent": {
+    "side_x": 1,
+    "tangent_lanes_x_mm": [
+      -16.0,
+      -1.0,
+      14.0,
+      29.0,
+      44.0
+    ],
+    "minimum_clearance_to_other_pulley_disks_mm": -13.8,
+    "per_tendon_clearance_mm": [
+      -13.8,
+      -13.8,
+      -13.8,
+      -13.8,
+      27.65
+    ],
+    "projected_clearance_pass": false
+  },
+  "minus_x_tangent": {
+    "side_x": -1,
+    "tangent_lanes_x_mm": [
+      -44.0,
+      -29.0,
+      -14.0,
+      1.0,
+      16.0
+    ],
+    "minimum_clearance_to_other_pulley_disks_mm": 14.2,
+    "per_tendon_clearance_mm": [
+      14.2,
+      14.2,
+      14.2,
+      14.2,
+      16.216
+    ],
+    "projected_clearance_pass": true
+  },
+  "adjacent_pulley_spacing": [
+    {
+      "center_spacing_mm": 34.438,
+      "nominal_edge_gap_mm": 6.438
+    },
+    {
+      "center_spacing_mm": 34.438,
+      "nominal_edge_gap_mm": 6.438
+    },
+    {
+      "center_spacing_mm": 34.438,
+      "nominal_edge_gap_mm": 6.438
+    },
+    {
+      "center_spacing_mm": 34.438,
+      "nominal_edge_gap_mm": 6.438
+    }
+  ],
+  "existing_guide_y_mm": -32.0,
+  "existing_guide_lanes": [
+    {
+      "tendon_index": 0,
+      "guide_x_mm": -27.0,
+      "nearest_pulley_index": 4,
+      "center_distance_mm": 58.249,
+      "clearance_with_nominal_tendon_mm": 43.449,
+      "projected_overlap": false
+    },
+    {
+      "tendon_index": 1,
+      "guide_x_mm": -13.0,
+      "nearest_pulley_index": 4,
+      "center_distance_mm": 44.643,
+      "clearance_with_nominal_tendon_mm": 29.843,
+      "projected_overlap": false
+    },
+    {
+      "tendon_index": 2,
+      "guide_x_mm": 0.0,
+      "nearest_pulley_index": 4,
+      "center_distance_mm": 32.311,
+      "clearance_with_nominal_tendon_mm": 17.511,
+      "projected_overlap": false
+    },
+    {
+      "tendon_index": 3,
+      "guide_x_mm": 13.0,
+      "nearest_pulley_index": 4,
+      "center_distance_mm": 20.809,
+      "clearance_with_nominal_tendon_mm": 6.009,
+      "projected_overlap": false
+    },
+    {
+      "tendon_index": 4,
+      "guide_x_mm": 27.0,
+      "nearest_pulley_index": 4,
+      "center_distance_mm": 12.369,
+      "clearance_with_nominal_tendon_mm": -2.431,
+      "projected_overlap": true
+    }
+  ],
+  "suggested_guide_plane_y_mm": -20.0,
+  "suggested_guide_plane_reason": "Y=-20 is 10 mm beyond the top pulley disk's nominal +Y edge at Y=-30; it still requires full CAD routing, guide mounting, and 3D clearance checks."
+}

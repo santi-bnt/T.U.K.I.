@@ -1,0 +1,9 @@
+{
+  "name": "tuki_protocol",
+  "version": "1.0.0",
+  "description": "Shared, allocation-free ASCII protocol parser for TUKI firmware",
+  "build": {
+    "includeDir": "include",
+    "srcDir": "src"
+  }
+}

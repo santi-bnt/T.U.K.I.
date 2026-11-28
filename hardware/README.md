@@ -1,8 +1,30 @@
 # TUKI hardware and print manifest
 
+## Selección actual para imprimir: TUKI V4 R1
+
+La lista única de archivos para la siguiente impresión está en [`imprimir/`](../imprimir/LEEME.md), en la raíz. Contiene solo los STL seleccionados de R1, empieza con tres cupones y marca los ensayos físicos pendientes. No selecciones piezas por las listas históricas que siguen en este README. La mano/palma y los dedos previamente impresos se conservan; no se repiten.
+
+El paquete consolidado original se archivó localmente bajo `.local-private/root-archives/source-zips/`; el directorio `imprimir/` contiene las copias de STL extraídas y revisadas. La geometría pasó auditoría CAD, no laminado ni pruebas físicas. Consulta el [informe R1](../docs/TUKI_V4_REPARACION_R1.md).
+
+## Inventarios anteriores (referencia histórica)
+
+Los inventarios siguientes describen V2N/V6 y no son la lista de impresión V4 R1.
+
+## V4 mechanical prototype
+
+The pre-R1 V4 candidate and its CAD review are recorded in the [mechanical review](../docs/TUKI_V4_MECHANICAL_REVIEW.md). The corrected R1 print selection is listed only in the root [`imprimir/`](../imprimir/LEEME.md) folder; use the [assembly guide](../docs/TUKI_V4_ASSEMBLY_GUIDE.md) for bench checks.
+
+## Current V2N/A1 Mini arm redesign — preliminary
+
+The user's mechanical reference is V2N/A1 Mini. The already-printed `CAMA_00` test coupons and `CAMA_01` palm/thumb/index pieces are preserved; this iteration does not overwrite or alter the supplied hand, finger, rack, or SG90 parts. New parametric source, assembly preview, report, and STEP files are under [`cad/editable/tuki_v2n_arm_v1/`](cad/editable/tuki_v2n_arm_v1/README.md). New forearm/collar STLs are under `printables/forearm/v2n-arm-v1/`; electronics housing parts are under `printables/electronics-drawer/v2n-arm-v1/`.
+
+The concept uses a tapered hollow forearm in two bolted halves with three internal cross-ribs and a clear cable channel, a tapered structural wrist collar, and a thicker removable electronics base. Five SG90s stay in the existing hand rack. The FRDM-RW612 reference envelope uses the published 130 × 55 mm PCB outline; board component height, exact regulator, carrier mounting, connector orientation, cable strain relief, strength and fit still require confirmation. No battery volume is reserved. The USB-C opening is deliberately disabled until the actual board-port position and plug clearance are measured; the fixed screw-on service cover remains a configurable panel.
+
+All six preliminary STLs pass single-component watertight edge checks and fit within the 180 × 180 × 180 mm A1 Mini build volume. These are design/mesh checks only, not print or assembly validation. The palm-to-collar pattern is blank and unverified, so do not treat the new pieces as compatible with the printed palm until the mating face is measured. Keep this preliminary set outside the established print manifest until a physical fit review is complete.
+
 ## Current design and status
 
-The current target is the V6 visual design: right robotic hand, five articulated fingers, five SG90 positions, enclosed forearm, and a horizontal removable electronics drawer. The drawer is a conceptual/test-print revision, not a physically validated installation. No evidence in this repository verifies drawer mounting holes against the forearm, actual electronics/connector clearance, or sliding tolerances. The NXP controller, battery, and regulated supply have no confirmed placement.
+The legacy inventory below records the prior V6 print design for reference. V2N/A1 Mini is the current hand reference; the V2N arm v1 above is a separate preliminary redesign, not a validated replacement print manifest. The V6 drawer remains a conceptual/test-print revision. Its mounting, electronics/connector clearance, and sliding tolerances were not physically validated.
 
 The supplied hand and forearm STLs are print-bed layouts in nominal millimeters with Z up. Preserve the provided bed arrangement; do not interpret those coordinates as installed assembly transforms. The two V6 drawer `_PARA_IMPRIMIR.stl` files are individually oriented print parts. Do not print their `_ENSAMBLE.stl` equivalents in addition.
 

@@ -1,6 +1,26 @@
 # TUKI print preparation checklist
 
+**Lista activa V4 R1:** utiliza únicamente los archivos de [`imprimir/`](../imprimir/LEEME.md), en la raíz del repositorio. Empieza con los tres cupones; el resto sigue pendiente de validación física. Las listas V2N/V6 de abajo son históricas y no deben combinarse con V4 R1.
+
+For V4 R1, test the printed pin and cap fit, the M3-05 nut relief, and the sequence for freeing T1 during plate removal. Follow the [R1 report](../docs/TUKI_V4_REPARACION_R1.md).
+
+## V4 prototype
+
+- [ ] Complete the [V4 integration checks](../docs/TUKI_V4_ASSEMBLY_GUIDE.md), including the measured palm interface and hardware envelopes.
+- [ ] Slice the wrist with guide axes predominantly vertical and confirm all bores remain clear without inaccessible supports. Validate a sample channel with the real tendon first.
+
 Complete this list before sending jobs to a printer. This is a file and geometry audit, not a physical assembly validation.
+
+## V2N/A1 Mini arm v1 — preliminary, separate from the existing hand beds
+
+- [ ] Confirm that the already-printed `CAMA_00` test coupons and `CAMA_01` palm/thumb/index pieces remain unchanged. The new generator must not write into their source paths.
+- [ ] Measure the actual palm-to-wrist mating face and enter its datum/hole pattern in `build_tuki_v2n_arm_v1.py`; the supplied collar top is intentionally blank.
+- [ ] Confirm the exact FRDM-RW612 revision, connector orientation, component heights, and the regulator model/clearance. The 130 × 55 mm PCB outline is only a board-level envelope.
+- [ ] Measure the USB-C port and molded plug, then configure and test the cover cutout. The exported cover has no USB-C hole yet.
+- [ ] Verify that the new carrier, ribs, bolt seats, and service cover do not obstruct components or the continuous cable path.
+- [ ] Slice each new STL separately in Bambu Studio and confirm the generated orientation, walls, supports, screw access, and A1 Mini envelope. CAD topology checks are not print validation.
+- [ ] Trial-fit the collar, forearm halves, and electronics base without servos powered; inspect palm fit, cable routing, fasteners, and structural flex before committing to a final revision.
+- [ ] Do not alter or reprint V2N hand parts, SG90 rack, fingers, or existing beds as part of this arm iteration.
 
 ## Right hand
 

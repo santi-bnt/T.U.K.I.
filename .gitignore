@@ -3,6 +3,8 @@ node_modules
 out
 coverage
 .env*
+firmware/esp32/include/wifi_config.h
+firmware/esp32/.pio/
 *.tsbuildinfo
 .playwright-mcp/
 scripts/.cad-reference/

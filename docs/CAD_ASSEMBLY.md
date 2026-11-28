@@ -1,5 +1,11 @@
 # CAD assembly and asset audit
 
+> **V4 R1:** see the [hinge bore and M3 nut relief revision](TUKI_V4_REPARACION_R1.md) for the physical CAD and service sequence.
+
+> **Print selection:** the root [`imprimir/`](../imprimir/LEEME.md) folder is the sole selected V4 R1 STL list. It contains three first-print coupons, the R1 structural parts, M3 clamps, pulley candidate, and hinge-pin/cap bed. It excludes CAD/STEP, old versions, and the already-printed hand/fingers.
+
+> **Mechanical V4:** See [the V4 mechanical review](TUKI_V4_MECHANICAL_REVIEW.md) for the STEP audit and prototype wrist routing. The physical palm interface remains pending.
+
 > **Scope note (updated 2026-11-23):** This inventory documents the supplied V6 manufacturing/CAD state and a separate local V2N/A1 Mini arm proposal. The active V2N website model includes its current visual forearm geometry; this web release does not include that proposal's editable CAD or manufacturing STL/STEP files and does not modify or validate printed parts, print beds, or physical assembly. Do not use the V6 source history below as provenance for V2N. See `docs/DIGITAL_TWIN.md` and `docs/ASSET_LICENSES.md` for the web model and its provenance.
 
 > **V2N/A1 Mini arm v1 update (2026-11-23):** A local parametric preliminary arm/collar/electronics-base concept was created, and its six meshes are incorporated into the active web GLB. The CAD source and manufacturing outputs remain local and are excluded from this web-release staging. This concept does not modify or claim fit with the printed V2N hand beds. The palm mating face and USB-C opening remain unset pending direct measurements.
